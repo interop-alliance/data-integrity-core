@@ -179,22 +179,20 @@ export interface IVerifier {
   verify: (data: IVerifiablePayload) => Promise<boolean>
 }
 
-/*!
- * The abstract KeyPair base class below is adapted from
- * @digitalcredentials/keypair.
- * Copyright (c) 2022-2025 Digital Credentials Consortium. (Conversion to TypeScript)
- * Copyright (c) 2018-2022 Digital Bazaar, Inc. All rights reserved.
- */
-
 export interface IVerificationResult {
   verified: boolean
   error?: Error
+}
+
+export interface GenerateKeyPairOptions extends IKeyPairCore {
+  seed?: Uint8Array
 }
 
 /**
  * Abstract base class for "live" key pair instances -- the runtime half of the
  * IKeyPair contract defined above. Subclasses (e.g. Ed25519VerificationKey)
  * supply key material and the suite-specific signer()/verifier() methods.
+ * Adapted from `@digitalcredentials/keypair`
  */
 export abstract class AbstractKeyPair implements IKeyPairCore {
   public id?: string
@@ -228,11 +226,15 @@ export abstract class AbstractKeyPair implements IKeyPairCore {
   /**
    * Generates a new public/private key pair instance.
    *
-   * @param _options {object} - Suite-specific options for the KeyPair.
+   * @param _options {GenerateKeyPairOptions} - Suite-specific options for the KeyPair --
+   *   typically the IKeyPairCore metadata (id, controller, etc.) plus any
+   *   subclass-specific generation inputs (e.g. a deterministic `seed`).
    *
    * @returns {Promise<AbstractKeyPair>} A KeyPair instance.
    */
-  static async generate(_options: IKeyPair = {}): Promise<AbstractKeyPair> {
+  static async generate(
+    _options: GenerateKeyPairOptions = {}
+  ): Promise<AbstractKeyPair> {
     throw new Error('Abstract method, must be implemented in subclass.')
   }
 

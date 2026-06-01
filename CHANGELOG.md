@@ -1,6 +1,6 @@
 # @interop/data-integrity-core Changelog
 
-## 6.1.0 - 
+## 6.1.0 - 2026-06-01
 ### Added
 - Add `IProofDescription` interface (a Data Integrity proof, or the proof
   options used while creating one) listing the spec-defined proof terms.

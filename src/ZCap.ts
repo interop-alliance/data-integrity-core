@@ -69,30 +69,7 @@ export interface IDelegatedZcap {
 /**
  * A zCap is either a root or a delegated authorization capability.
  *
- * Use this discriminated union when the call site knows it has a real,
- * well-formed zCap and can narrow via `'parentCapability' in cap`.
+ * Narrow with `'parentCapability' in cap` to discriminate between
+ * `IRootZcap` and `IDelegatedZcap`.
  */
 export type IZcap = IRootZcap | IDelegatedZcap
-
-/**
- * A permissive zCap shape that conflates root and delegated kinds and admits
- * arbitrary additional properties (e.g. the opaque object returned from
- * `jsigs.sign()`).
- *
- * Prefer the strict `IZcap` union when possible. Use `IZcapLike` only when:
- * - the call site receives a capability whose kind is not yet known and
- *   cannot reasonably discriminate, or
- * - the call site needs to accept the open-ended shape produced by
- *   linked-data signature libraries that may attach extra properties.
- */
-export interface IZcapLike {
-  '@context': string | string[]
-  id: string
-  invocationTarget: string
-  controller?: string | string[]
-  parentCapability?: string
-  allowedAction?: string | string[]
-  expires?: string
-  proof?: ICapabilityDelegationProof | ICapabilityDelegationProof[]
-  [key: string]: unknown
-}

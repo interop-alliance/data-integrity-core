@@ -2,7 +2,7 @@
  * Copyright (c) 2026 Interop Alliance. All rights reserved.
  */
 import type { ILdType } from './LD.js'
-import type { IPublicKey } from './KeyPair.js'
+import type { IPublicJwk } from './KeyPair.js'
 
 /**
  * A Decentralized Identifier (DID) URL
@@ -12,8 +12,43 @@ export type IDID = `did:${string}`
 
 export type IDidDocument = IDidDocument_v1_0 | IDidDocument_v1_1
 
-export type KeyId = string
-export type IKeyIdOrObject = KeyId | IPublicKey
+/**
+ * @see https://www.w3.org/TR/cid-1.0/#referring-to-verification-methods
+ */
+export type IVerificationMethodReference = string
+
+/**
+ * @see https://www.w3.org/TR/cid-1.0/#verification-methods
+ */
+export interface IVerificationMethodCore {
+  id: string // URL
+  type: string
+  controller: string | IDID // URL
+  expires?: string // dateTimeStamp
+  revoked?: string // dateTimeStamp
+}
+
+export interface IJsonWebKeyMethod extends IVerificationMethodCore {
+  type: 'JsonWebKey',
+  publicKeyJwk: IPublicJwk
+}
+
+export interface IMultikeyMethod extends IVerificationMethodCore {
+  type: 'Multikey',
+  publicKeyMultibase: string
+}
+
+export type IVerificationMethod = IJsonWebKeyMethod | IMultikeyMethod
+
+/**
+ * A value held by a verification relationship -- either a full embedded
+ * verification method, or a URL reference to one defined elsewhere.
+ *
+ * @see https://www.w3.org/TR/cid-1.0/#referring-to-verification-methods
+ */
+export type IVerificationMethodEntry =
+  | IVerificationMethod
+  | IVerificationMethodReference
 
 // @see https://www.w3.org/TR/cid-1.0/#services
 export interface IServiceObject {
@@ -36,24 +71,24 @@ export interface IDidCoreDocument {
    * @see https://www.w3.org/TR/cid-1.0/#verification-relationships
    */
   // Verification method used for signing assertions such as VCs
-  assertionMethod?: IKeyIdOrObject | IKeyIdOrObject[]
+  assertionMethod?: IVerificationMethodEntry | IVerificationMethodEntry[]
 
   // Verification method used for authentication
   //   and (for some DID methods) for key rotation and document updates
-  authentication?: IKeyIdOrObject | IKeyIdOrObject[]
+  authentication?: IVerificationMethodEntry | IVerificationMethodEntry[]
 
   // Used for delegating zCaps (Authorization Capabilities) chains
-  capabilityDelegation?: IKeyIdOrObject | IKeyIdOrObject[]
+  capabilityDelegation?: IVerificationMethodEntry | IVerificationMethodEntry[]
 
   // Used for invoking zCaps (Authorization Capabilities) chains
-  capabilityInvocation?: IKeyIdOrObject | IKeyIdOrObject[]
+  capabilityInvocation?: IVerificationMethodEntry | IVerificationMethodEntry[]
 
   // Used for encrypting/decrypting
-  keyAgreement?: IKeyIdOrObject | IKeyIdOrObject[]
+  keyAgreement?: IVerificationMethodEntry | IVerificationMethodEntry[]
 
   // Used when the verification purpose (auth, assertion, etc) is unknown,
   // or when a key can be used for all purposes
-  verificationMethod?: IKeyIdOrObject | IKeyIdOrObject[]
+  verificationMethod?: IVerificationMethodEntry | IVerificationMethodEntry[]
 }
 
 /**

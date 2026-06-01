@@ -4,8 +4,7 @@ import {
   ICapabilityDelegationProof,
   IDelegatedZcap,
   IRootZcap,
-  IZcap,
-  IZcapLike
+  IZcap
 } from '../src'
 
 await describe('RootZcap', async () => {
@@ -58,17 +57,5 @@ await describe('IZcap union', async () => {
       invocationTarget: 'https://example.com/r'
     }
     assert.ok(!('parentCapability' in root))
-  })
-})
-
-await describe('IZcapLike', async () => {
-  await test('admits extra properties', async () => {
-    const loose: IZcapLike = {
-      '@context': 'https://w3id.org/zcap/v1',
-      id: 'urn:zcap:root:https%3A%2F%2Fexample.com%2Fr',
-      invocationTarget: 'https://example.com/r',
-      arbitraryExtra: 'allowed'
-    }
-    assert.ok(loose)
   })
 })

@@ -95,7 +95,9 @@ export interface ISignablePayload {
   data: Uint8Array
 }
 export interface ISigner {
+  // Contains the key id
   id: string
+  // Used by DataIntegrity signature suites. For example, 'Ed25519'
   algorithm?: string
   sign: (signable: ISignablePayload) => Promise<Uint8Array>
 }

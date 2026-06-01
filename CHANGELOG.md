@@ -1,5 +1,15 @@
 # @interop/data-integrity-core Changelog
 
+## 6.1.0 - 
+### Added
+- Add `IProofDescription` interface (a Data Integrity proof, or the proof
+  options used while creating one) listing the spec-defined proof terms.
+
+### Changed
+- Type the `proof` field of `IVerifiableCredential` and
+  `IVerifiablePresentation` as `IProofDescription | IProofDescription[]`
+  (was `any`).
+
 ## 6.0.2 - 2026-05-31
 ### Added
 - Add `IJsonWebKeyDocument` and `IMultikeyDocument` interfaces.

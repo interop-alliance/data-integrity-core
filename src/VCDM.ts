@@ -13,6 +13,35 @@ export interface IIssuerObject extends ILinkedDataObject {
 // Represents a Json Web Token in compact form: "header.payload.signature"
 export type ICompactJWT = string
 
+// A Data Integrity proof, or the proof options used while creating one.
+// Enumerates the proof terms defined by the VC Data Integrity spec
+// (https://www.w3.org/TR/vc-data-integrity/#proofs); the index signature
+// remains open for any additional cryptosuite-defined terms.
+// All fields are optional because a proof is built up incrementally during
+// signing (the engine starts from an empty object and fills it in).
+export interface IProofDescription {
+  // https://www.w3.org/TR/vc-data-integrity/#proofs
+  id?: string
+  type?: string
+  cryptosuite?: string
+  // XSD dateTimeStamp
+  created?: string
+  // XSD dateTimeStamp
+  expires?: string
+  verificationMethod?: string | { id: string }
+  proofPurpose?: string
+  proofValue?: string
+  domain?: string | string[]
+  challenge?: string
+  nonce?: string
+  // https://www.w3.org/TR/vc-data-integrity/#proof-chains
+  previousProof?: string | string[]
+  '@context'?: string | Array<string | object>
+
+  // Any additional cryptosuite-defined terms
+  [x: string]: unknown
+}
+
 // Represents a Verifiable Credential protected by
 //   the Verifiable Credential Data Integrity 1.0 spec
 // @see https://www.w3.org/TR/vc-data-integrity/
@@ -76,7 +105,7 @@ export interface IVerifiableCredential extends ILinkedDataObject {
   // However, for JWT-protected VCs, 'proof' is optional (is external)
   // @see https://w3c-ccg.github.io/ld-cryptosuite-registry/
   // for examples of cryptographic suites used for VC proofs
-  proof?: any
+  proof?: IProofDescription | IProofDescription[]
 
   // Implementers are free to add any other properties to a VC
   [x: string]: any
@@ -169,7 +198,7 @@ export interface IVerifiablePresentation extends ILinkedDataObject {
   // Adding a proof (signing) to a VP is optional, and is typically used
   // to authenticate the presenter (who may be different from the subject of
   // any of the VCs).
-  proof?: any
+  proof?: IProofDescription | IProofDescription[]
 
   // Implementers are free to add any other properties to a VP
   [x: string]: any

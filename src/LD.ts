@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2025 Digital Credentials Consortium. All rights reserved.
+ * Copyright (c) 2026 Interop Alliance. All rights reserved.
  */
 
 // General Linked Data 'type' term, aliased from '@type'

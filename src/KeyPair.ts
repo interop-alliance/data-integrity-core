@@ -1,11 +1,18 @@
 /*!
- * Copyright (c) 2025 Digital Credentials Consortium.
+ * Copyright (c) 2026 Interop Alliance.
  */
-export type IKeyPair = IVerificationKeyPair2018 | IVerificationKeyPair2020 |
-IMultikeyPair | IJsonWebKeyPair2020 | IJsonWebKeyPair
+export type IKeyPair =
+  | IVerificationKeyPair2018
+  | IVerificationKeyPair2020
+  | IMultikeyPair
+  | IJsonWebKeyPair2020
+  | IJsonWebKeyPair
 
-export type IPublicKey = IPublicKey2018 | IPublicKey2020 | IPublicMultikey
-| IJsonWebPublicKey
+export type IPublicKey =
+  | IPublicKey2018
+  | IPublicKey2020
+  | IPublicMultikey
+  | IJsonWebPublicKey
 
 export interface IKeyPairCore {
   '@context'?: string

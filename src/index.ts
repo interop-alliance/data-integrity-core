@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2025 Digital Credentials Consortium. All rights reserved.
+ * Copyright (c) 2026 Interop Alliance. All rights reserved.
  */
 export * from './LD.js'
 export * from './DID.js'

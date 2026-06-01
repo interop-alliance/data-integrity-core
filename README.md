@@ -1,9 +1,9 @@
-# SSI Types and Data Model _(@digitalcredentials/ssi)_
+# Data Integrity and SSI Types _(@interop/data-integrity-core)_
 
-[![Node.js CI](https://github.com/digitalcredentials/ssi/workflows/Node.js%20CI/badge.svg)](https://github.com/digitalcredentials/ssi/actions?query=workflow%3A%22Node.js+CI%22)
-[![NPM Version](https://img.shields.io/npm/v/@digitalcredentials/ssi.svg)](https://npm.im/@digitalcredentials/ssi)
+[![Node.js CI](https://github.com/interop-alliance/data-integrity-core/workflows/CI/badge.svg)](https://github.com/interop-alliance/data-integrity-core/actions?query=workflow%3A%22CI%22)
+[![NPM Version](https://img.shields.io/npm/v/@interop/data-integrity-core.svg)](https://npm.im/@interop/data-integrity-core)
 
-> Typescript types for the W3C Verifiable Credentials Data Model, DID Core, cryptosuites, etc.
+> TypeScript types and definitions for the SSI ecosystem - cryptographic keys, DIDs, Verifiable Credentials, zCaps and related concepts.
 
 ## Table of Contents
 
@@ -43,7 +43,7 @@ the VC DM 1.1 is the stable version:
 
 ```
 "dependencies": {
-   "@digitalcredentials/vc-data-model": "^1.1.0"
+   "@interop/data-integrity-core": "^1.1.0"
 }
 ```
 
@@ -52,7 +52,7 @@ of the specification (which will likely make breaking changes). So, in the futur
 
 ```
 "dependencies": {
-   "@digitalcredentials/ssi": "^3.0.0"
+   "@interop/data-integrity-core": "^3.0.0"
 }
 ```
 
@@ -65,7 +65,7 @@ of the specification (which will likely make breaking changes). So, in the futur
 To install via NPM:
 
 ```
-npm install @digitalcredentials/ssi
+npm install @interop/data-integrity-core
 ```
 
 ### Development
@@ -73,7 +73,7 @@ npm install @digitalcredentials/ssi
 To install locally (for development):
 
 ```
-git clone https://github.com/digitalcredentials/ssi.git
+git clone https://github.com/interop-alliance/data-integrity-core.git
 cd ssi
 npm install
 ```
@@ -81,7 +81,7 @@ npm install
 ## Usage
 
 ```ts
-import { IVerifiableCredential, IVerifiablePresentation } from '@digitalcredentials/ssi'
+import { IVerifiableCredential, IVerifiablePresentation } from '@interop/data-integrity-core'
 
 // for example, in an Express route definition:
 const vp = req.body.presentation as IVerifiablePresentation
@@ -106,4 +106,4 @@ If editing the Readme, please conform to the
 
 ## License
 
-[MIT License](LICENSE.md) © 2022-2025 Digital Credentials Consortium.
+[MIT License](LICENSE.md) © 2026 Interop Alliance.

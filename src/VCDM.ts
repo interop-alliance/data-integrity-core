@@ -1,7 +1,7 @@
 /*!
- * Copyright (c) 2022-2025 Digital Credentials Consortium. All rights reserved.
+ * Copyright (c) 2022-2026 Interop Alliance. All rights reserved.
  */
-import { ILdType, ILinkedDataObject } from './LD.js'
+import type { ILdType, ILinkedDataObject } from './LD.js'
 
 export interface IIssuerObject extends ILinkedDataObject {
   id: string

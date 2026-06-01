@@ -1,8 +1,8 @@
 /*!
- * Copyright (c) 2025 Digital Credentials Consortium. All rights reserved.
+ * Copyright (c) 2026 Interop Alliance. All rights reserved.
  */
-import { ILdType } from './LD.js'
-import { IPublicKey } from './KeyPair.js'
+import type { ILdType } from './LD.js'
+import type { IPublicKey } from './KeyPair.js'
 
 /**
  * A Decentralized Identifier (DID) URL

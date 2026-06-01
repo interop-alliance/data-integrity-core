@@ -1,4 +1,8 @@
-# ssi Changelog
+# @interop/data-integrity-core Changelog
+
+## 6.0.0 - 
+### Changed
+- **BREAKING**: Fork from `@digitalcredentials/ssi@5.5.0` to `@interop/data-integrity-core@6.0.0`.
 
 ## 5.5.0 - 2026-05-31
 ### Added

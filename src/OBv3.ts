@@ -3,8 +3,8 @@
  * @see https://www.imsglobal.org/spec/ob/v3p0/
  */
 
-import { IVerifiableCredential } from './VCDM.js'
-import { ILdType, ILinkedDataObject } from './LD.js'
+import type { IVerifiableCredential } from './VCDM.js'
+import type { ILdType, ILinkedDataObject } from './LD.js'
 
 /**
  * OBv3 Credential

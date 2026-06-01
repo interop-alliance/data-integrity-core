@@ -1,28 +1,32 @@
 {
-  "name": "@digitalcredentials/ssi",
-  "description": "Typescript types for the W3C Verifiable Credentials Data Model.",
+  "name": "@interop/ssi",
+  "description": "TypeScript types and definitions for the SSI ecosystem - cryptographic keys, DIDs, proofs, Verifiable Credentials, zCaps and related concepts.",
   "version": "5.5.0",
+  "type": "module",
   "scripts": {
-    "build": "npm run clear && tsc -d",
+    "build": "pnpm run clear && tsc",
     "clear": "rimraf dist/*",
-    "lint": "ts-standard --fix --project tsconfig.spec.json",
-    "prepare": "npm run build",
-    "rebuild": "npm run clear && npm run build",
-    "test": "npm run lint && npm run test-node",
-    "test-node": "npx tsx --test test/*.spec.ts"
+    "dev": "vite",
+    "fix": "eslint --fix src test && pnpm run format",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "lint": "eslint src test",
+    "prepare": "pnpm run build",
+    "rebuild": "pnpm run clear && pnpm run build",
+    "test": "pnpm run lint && pnpm run test-node && pnpm run test-browser",
+    "test-browser": "playwright test",
+    "test-node": "vitest run",
+    "test-coverage": "vitest run --coverage"
   },
   "files": [
     "dist",
     "README.md",
     "LICENSE.md"
   ],
-  "type": "module",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "react-native": "./dist/index.js",
+      "import": "./dist/index.js"
     },
     "./did": {
       "types": "./dist/DID.d.ts",
@@ -41,43 +45,51 @@
       "default": "./dist/ZCap.js"
     }
   },
+  "module": "dist/index.js",
+  "browser": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "sideEffects": false,
+  "dependencies": {
+  },
   "devDependencies": {
-    "@types/chai": "^5.2.1",
-    "@types/mocha": "^10.0.1",
-    "@types/node": "^22.14.1",
-    "cross-env": "^7.0.3",
-    "mocha": "^10.2.0",
-    "rimraf": "^3.0.2",
-    "ts-node": "^10.9.1",
-    "ts-standard": "^12.0.2",
-    "typescript": "^5.8.3",
-    "tsx": "^4.19.4"
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.60.0",
+    "@types/node": "^25.9.1",
+    "@vitest/coverage-v8": "^4.1.7",
+    "eslint": "^10.4.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.6.0",
+    "prettier": "^3.8.3",
+    "rimraf": "^6.1.3",
+    "typescript": "^5.5.0",
+    "typescript-eslint": "^8.59.4",
+    "vite": "^8.0.14",
+    "vitest": "^4.1.7"
   },
   "publishConfig": {
-    "access": "public"
-  },
-  "mocha": {
-    "require": "ts-node/register",
-    "extension": [
-      "ts"
-    ],
-    "spec": "test/**/*.ts"
+    "access": "public",
+    "provenance": true
   },
   "keywords": [
-    "dcc"
+    "dcc",
+    "ssi",
+    "did",
+    "vc",
+    "zcap"
   ],
+  "packageManager": "pnpm@11.3.0",
   "engines": {
-    "node": ">=20.0"
+    "node": ">=24.0"
   },
   "author": {
-    "name": "Digital Credentials Consortium",
-    "url": "https://github.com/digitalcredentials/"
+    "name": "Interop Alliance",
+    "url": "https://github.com/interop-alliance/"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/digitalcredentials/vc-data-model.git"
+    "url": "git+https://github.com/interop-alliance/data-integrity.git"
   },
-  "homepage": "https://github.com/digitalcredentials/vc-data-model",
-  "bugs": "https://github.com/digitalcredentials/vc-data-model/issues"
+  "homepage": "https://github.com/interop-alliance/data-integrity",
+  "bugs": "https://github.com/interop-alliance/data-integrity/issues"
 }

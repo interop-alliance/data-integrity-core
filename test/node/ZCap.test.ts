@@ -1,14 +1,13 @@
-import { describe, test } from 'node:test'
-import assert from 'node:assert'
-import {
+import { describe, it, expect } from 'vitest'
+import type {
   ICapabilityDelegationProof,
   IDelegatedZcap,
   IRootZcap,
   IZcap
-} from '../src'
+} from '../../src/index.js'
 
-await describe('RootZcap', async () => {
-  await test('exists', async () => {
+describe('RootZcap', () => {
+  it('exists', () => {
     const root: IRootZcap = {
       '@context': 'https://w3id.org/zcap/v1',
       id: 'urn:zcap:root:https%3A%2F%2Fexample.com%2Fresource',
@@ -16,20 +15,18 @@ await describe('RootZcap', async () => {
       invocationTarget: 'https://example.com/resource'
     }
 
-    assert.ok(root)
+    expect(root).toBeTruthy()
   })
 })
 
-await describe('DelegatedZcap', async () => {
-  await test('exists', async () => {
+describe('DelegatedZcap', () => {
+  it('exists', () => {
     const proof: ICapabilityDelegationProof = {
       type: 'Ed25519Signature2020',
       created: '2026-01-01T00:00:00Z',
       verificationMethod: 'did:example:alice#key-1',
       proofPurpose: 'capabilityDelegation',
-      capabilityChain: [
-        'urn:zcap:root:https%3A%2F%2Fexample.com%2Fresource'
-      ],
+      capabilityChain: ['urn:zcap:root:https%3A%2F%2Fexample.com%2Fresource'],
       proofValue: 'z3...'
     }
 
@@ -44,18 +41,18 @@ await describe('DelegatedZcap', async () => {
       proof
     }
 
-    assert.ok(delegated)
+    expect(delegated).toBeTruthy()
   })
 })
 
-await describe('IZcap union', async () => {
-  await test('accepts root and delegated', async () => {
+describe('IZcap union', () => {
+  it('accepts root and delegated', () => {
     const root: IZcap = {
       '@context': 'https://w3id.org/zcap/v1',
       id: 'urn:zcap:root:https%3A%2F%2Fexample.com%2Fr',
       controller: 'did:example:alice',
       invocationTarget: 'https://example.com/r'
     }
-    assert.ok(!('parentCapability' in root))
+    expect('parentCapability' in root).toBe(false)
   })
 })

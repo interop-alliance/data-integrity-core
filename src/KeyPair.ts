@@ -14,7 +14,7 @@ export type IPublicKey =
   | IJsonWebPublicKey
 
 export interface IKeyPairCore {
-  '@context'?: string
+  '@context'?: string | string[]
   id?: string
   type?: string
   controller?: string
@@ -177,4 +177,191 @@ export interface IVerifier {
   id?: string
   algorithm?: string
   verify: (data: IVerifiablePayload) => Promise<boolean>
+}
+
+/*!
+ * The abstract KeyPair base class below is adapted from
+ * @digitalcredentials/keypair.
+ * Copyright (c) 2022-2025 Digital Credentials Consortium. (Conversion to TypeScript)
+ * Copyright (c) 2018-2022 Digital Bazaar, Inc. All rights reserved.
+ */
+
+export interface IVerificationResult {
+  verified: boolean
+  error?: Error
+}
+
+/**
+ * Abstract base class for "live" key pair instances -- the runtime half of the
+ * IKeyPair contract defined above. Subclasses (e.g. Ed25519VerificationKey)
+ * supply key material and the suite-specific signer()/verifier() methods.
+ */
+export abstract class AbstractKeyPair implements IKeyPairCore {
+  public id?: string
+  public type?: string
+  public controller?: string
+  public revoked?: string
+
+  // Implementers must override this in subclasses
+  static SUITE_CONTEXT: string = 'INVALID KeyPair CONTEXT'
+
+  /**
+   * Creates a public/private key pair instance. This is an abstract base class,
+   * actual key material and suite-specific methods are handled in the subclass.
+   *
+   * @param options {object} - The options to use.
+   * @param options.id {string} - The key id, typically composed of controller
+   *   URL and key fingerprint as hash fragment.
+   * @param options.controller {string} - DID/URL of the person/entity
+   *   controlling this key.
+   * @param [options.revoked] {string} - Timestamp of when the key has been
+   *   revoked, in RFC3339 format. If not present, the key itself is
+   *   considered not revoked.
+   */
+  constructor({ id, controller, revoked }: IKeyPairCore = {}) {
+    this.id = id
+    this.type = '' // type must be set by subclasses
+    this.controller = controller
+    this.revoked = revoked
+  }
+
+  /**
+   * Generates a new public/private key pair instance.
+   *
+   * @param _options {object} - Suite-specific options for the KeyPair.
+   *
+   * @returns {Promise<AbstractKeyPair>} A KeyPair instance.
+   */
+  static async generate(_options: IKeyPair = {}): Promise<AbstractKeyPair> {
+    throw new Error('Abstract method, must be implemented in subclass.')
+  }
+
+  /**
+   * Imports a key pair instance from a provided externally fetched key
+   * document, optionally checking it for revocation and required context.
+   *
+   * @param options {object} - Options hashmap.
+   * @param options.document {IKeyPairCore} - Externally fetched key document.
+   * @param [options.checkContext] {boolean} - Whether to check that the
+   *   fetched key document contains the context required by the key's crypto
+   *   suite.
+   * @param [options.checkRevoked] {boolean} - Whether to check the key
+   *   object for the presence of the `revoked` timestamp.
+   *
+   * @returns {Promise<AbstractKeyPair>} Resolves with the resulting key pair instance.
+   */
+  static async fromKeyDocument({
+    document,
+    checkContext = true,
+    checkRevoked = true
+  }: {
+    document: IKeyPairCore
+    checkContext?: boolean
+    checkRevoked?: boolean
+  }): Promise<AbstractKeyPair> {
+    if (checkContext) {
+      const fetchedDocContexts: string[] = Array.isArray(document['@context'])
+        ? document['@context']
+        : [document['@context'] as string]
+
+      if (!fetchedDocContexts.includes(this.SUITE_CONTEXT)) {
+        throw new Error(
+          'Key document does not contain required context "' +
+            this.SUITE_CONTEXT +
+            '".'
+        )
+      }
+    }
+    if (checkRevoked && (document.revoked ?? '') !== '') {
+      throw new Error(`Key has been revoked since: "${document.revoked ?? ''}".`)
+    }
+    return await this.from(document)
+  }
+
+  /**
+   * Generates a KeyPair from some options.
+   *
+   * @param _options {IKeyPairCore} - Key pair description object.
+   *
+   * @returns {Promise<AbstractKeyPair>} A KeyPair.
+   * @throws Unsupported Key Type.
+   */
+  static async from(_options: IKeyPairCore): Promise<AbstractKeyPair> {
+    throw new Error('Abstract method from() must be implemented in subclass.')
+  }
+
+  /**
+   * Exports the serialized representation of the KeyPair and other information
+   * that json-ld Signatures can use to form a proof.
+   *
+   * NOTE: Subclasses MUST override this method (and add the exporting of
+   * their public and private key material).
+   *
+   * @param [options] {object} - Options hashmap.
+   * @param [options.publicKey] {boolean} - Export public key material?
+   * @param [options.secretKey] {boolean} - Export secret key material?
+   * @param [options.includeContext] {boolean} - Include the suite context?
+   *
+   * @returns {IKeyPair} A public key object.
+   */
+  export({
+    publicKey = false,
+    secretKey = false
+  }: {
+    publicKey?: boolean
+    secretKey?: boolean
+    includeContext?: boolean
+  } = {}): IKeyPair {
+    if (!publicKey && !secretKey) {
+      throw new Error(
+        'Export requires specifying either "publicKey" or "secretKey".'
+      )
+    }
+    const key: IKeyPair = {
+      id: this.id,
+      type: this.type,
+      controller: this.controller
+    }
+    if (this.revoked != null) {
+      key.revoked = this.revoked
+    }
+
+    return key
+  }
+
+  /**
+   * Returns the public key fingerprint, multibase+multicodec encoded.
+   *
+   * @returns {string} The fingerprint.
+   */
+  abstract fingerprint(): string
+
+  /**
+   * Verifies that a given key fingerprint matches the public key material
+   * belonging to this key pair.
+   *
+   * @param options {object} - Options hashmap.
+   * @param options.fingerprint {string} - Public key fingerprint.
+   *
+   * @returns {IVerificationResult} An object with verified flag.
+   */
+  abstract verifyFingerprint({
+    fingerprint
+  }: {
+    fingerprint: string
+  }): IVerificationResult
+
+  /**
+   * Returns a signer object. NOTE: Applies only to verifier type keys.
+   *
+   * @returns {ISigner} A signer for json-ld usage.
+   */
+  abstract signer(): ISigner
+
+  /**
+   * Returns a verifier object. NOTE: Applies only to verifier type keys.
+   *
+   * @returns {IVerifier} Used to verify jsonld-signatures.
+   */
+  abstract verifier(): IVerifier
 }

@@ -4,6 +4,9 @@
 ### Changed
 - **BREAKING**: Fork from `@digitalcredentials/ssi@5.5.0` to `@interop/data-integrity-core@6.0.0`.
 
+### Added
+- Add `KeyPair` abstract class export (brought over from `@digitalcredentials/keypair`).
+
 ## 5.5.0 - 2026-05-31
 ### Added
 - Add exports of `IZcap` and related interfaces.

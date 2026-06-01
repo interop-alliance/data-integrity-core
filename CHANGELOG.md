@@ -1,6 +1,6 @@
 # @interop/data-integrity-core Changelog
 
-## 6.0.2 - 
+## 6.0.2 - 2026-05-31
 ### Added
 - Add `IJsonWebKeyDocument` and `IMultikeyDocument` interfaces.
 

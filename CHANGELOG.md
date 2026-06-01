@@ -1,5 +1,9 @@
 # @interop/data-integrity-core Changelog
 
+## 6.0.1
+### Changed
+- Update `generate()` function definition, include seed.
+
 ## 6.0.0 - 2026-05-31
 ### Changed
 - **BREAKING**: Fork from `@digitalcredentials/ssi@5.5.0` to `@interop/data-integrity-core@6.0.0`.

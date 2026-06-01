@@ -52,7 +52,7 @@ To install locally (for development):
 
 ```
 git clone https://github.com/interop-alliance/data-integrity-core.git
-cd ssi
+cd data-integrity-core
 npm install
 ```
 
@@ -73,7 +73,7 @@ const vp = req.body.presentation as IVerifiablePresentation
 * `IKeyPair` key description interface and its children, such as `IVerificationKeyPair2020` and `IKeyAgreementKeyPair2020`
 * `AbstractKeyPair` abstract class (IKeyPair + signers, verifiers, and so on)
 * `ISigner`
-* ... others (see individual exports in `/src`)
+* `IDocumentLoader` and `IRemoteDocument`.
 * `IZcap` and related interfaces (`IRootZcap`, `IDelegatedZcap`, `IZcapLike`, and `ICapabilityDelegationProof`)
 
 ## Contribute

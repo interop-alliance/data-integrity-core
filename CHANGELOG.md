@@ -6,6 +6,7 @@
 
 ### Added
 - Add `KeyPair` abstract class export (brought over from `@digitalcredentials/keypair`).
+- Add `IRemoteDocument` and `IDocumentLoader` interfaces (from `@interop/security-document-loader`).
 
 ## 5.5.0 - 2026-05-31
 ### Added

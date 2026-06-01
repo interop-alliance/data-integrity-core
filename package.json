@@ -36,6 +36,10 @@
       "types": "./dist/KeyPair.d.ts",
       "default": "./dist/KeyPair.js"
     },
+    "./loader": {
+      "types": "./dist/Loader.d.ts",
+      "default": "./dist/Loader.js"
+    },
     "./vcdm": {
       "types": "./dist/VCDM.d.ts",
       "default": "./dist/VCDM.js"

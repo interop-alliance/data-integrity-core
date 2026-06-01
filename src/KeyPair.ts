@@ -56,6 +56,16 @@ export interface IMultikeyPair extends IPublicMultikey {
 }
 
 /**
+ * Multikey verification-method document -- either public-only
+ * (`IPublicMultikey`) or with secret material (`IMultikeyPair`). The union is
+ * the natural input type for importers: a `'secretKeyMultibase' in document`
+ * check narrows it to `IMultikeyPair`. Both arms guarantee `publicKeyMultibase`
+ * per the Multikey spec.
+ * Used in various keys' from() factory methods.
+ */
+export type IMultikeyDocument = IPublicMultikey | IMultikeyPair
+
+/**
  * JWK key types, modeled as discriminated unions over `kty` (and `crv` where
  * applicable). Public variants forbid the private scalar `d` via `d?: never`,
  * so a secret JWK is not assignable to a public JWK at the type level.
@@ -157,6 +167,15 @@ export interface IJsonWebPublicKey extends IKeyPairCore {
 export interface IJsonWebKeyPair extends IJsonWebPublicKey {
   secretKeyJwk: ISecretJwk
 }
+
+/**
+ * JsonWebKey verification-method document -- either public-only
+ * (`IJsonWebPublicKey`) or with secret material (`IJsonWebKeyPair`). The union
+ * is the natural input type for importers: a `'secretKeyJwk' in document` check
+ * narrows it to `IJsonWebKeyPair`. Both arms guarantee `publicKeyJwk`.
+ * Used in various keys' from() factory methods.
+ */
+export type IJsonWebKeyDocument = IJsonWebPublicKey | IJsonWebKeyPair
 
 export interface ISignablePayload {
   data: Uint8Array

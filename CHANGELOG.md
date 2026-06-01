@@ -1,5 +1,9 @@
 # @interop/data-integrity-core Changelog
 
+## 6.0.2 - 
+### Added
+- Add `IJsonWebKeyDocument` and `IMultikeyDocument` interfaces.
+
 ## 6.0.1 - 2026-05-31
 ### Changed
 - Update `generate()` function definition, include seed.

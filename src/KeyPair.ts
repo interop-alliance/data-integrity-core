@@ -5,7 +5,6 @@ export type IKeyPair =
   | IVerificationKeyPair2018
   | IVerificationKeyPair2020
   | IMultikeyPair
-  | IJsonWebKeyPair2020
   | IJsonWebKeyPair
 
 export type IPublicKey =
@@ -50,52 +49,113 @@ export interface IVerificationKeyPair2020 extends IPublicKey2020 {
  * @see https://www.w3.org/TR/cid-1.0/#Multikey
  */
 export interface IPublicMultikey extends IKeyPairCore {
-  publicKeyMultibase?: string
+  publicKeyMultibase: string
 }
 export interface IMultikeyPair extends IPublicMultikey {
-  secretKeyMultibase?: string
+  secretKeyMultibase: string
 }
 
-export interface IJsonWebPublicKey extends IKeyPairCore {
-  // Used by JsonWebKey2020
-  publicKeyJwk?: IJsonWebKey
-}
-export interface IJsonWebKeyPair2020 extends IJsonWebPublicKey {
-  privateKeyJwk?: IJsonWebKey
-}
-// @see https://www.w3.org/TR/cid-1.0/#JsonWebKey
-export interface IJsonWebKeyPair extends IJsonWebPublicKey {
-  secretKeyJwk?: IJsonWebKey
-}
+/**
+ * JWK key types, modeled as discriminated unions over `kty` (and `crv` where
+ * applicable). Public variants forbid the private scalar `d` via `d?: never`,
+ * so a secret JWK is not assignable to a public JWK at the type level.
+ *
+ * Add new key types (e.g. post-quantum ML-DSA `kty: 'AKP'`) by appending a
+ * public/secret pair to the unions below.
+ *
+ * @see https://datatracker.ietf.org/doc/html/rfc7517
+ * @see https://datatracker.ietf.org/doc/html/rfc7518
+ */
 
-export interface IJsonWebKey {
-  // Key type, e.g. 'RSA' or 'OKP'
-  kty?: string
-
-  // Curve, used by elliptic cryptography keys (kty: 'OKP'), e.g. 'Ed25519'
-  crv?: string
-
-  // Algorithm, e.g. 'ES384'
+/**
+ * EC keys: P-256, P-384, P-521, secp256k1.
+ */
+export interface IEcJwkCore {
+  kty: 'EC'
+  crv: 'P-256' | 'P-384' | 'P-521' | 'secp256k1'
+  // Public coordinates, base64url-encoded
+  x: string
+  y: string
   alg?: string
+  kid?: string
+  use?: 'sig' | 'enc'
+}
+export interface IEcPublicJwk extends IEcJwkCore {
+  d?: never
+}
+export interface IEcSecretJwk extends IEcJwkCore {
+  // Private scalar, base64url-encoded
+  d: string
+}
 
-  // Public key, typically base64url encoded
-  x?: string
+/**
+ * OKP keys: Ed25519, Ed448 (signing); X25519, X448 (key agreement).
+ */
+export interface IOkpJwkCore {
+  kty: 'OKP'
+  crv: 'Ed25519' | 'Ed448' | 'X25519' | 'X448'
+  // Public key, base64url-encoded
+  x: string
+  alg?: string
+  kid?: string
+  use?: 'sig' | 'enc'
+}
+export interface IOkpPublicJwk extends IOkpJwkCore {
+  d?: never
+}
+export interface IOkpSecretJwk extends IOkpJwkCore {
+  // Private key, base64url-encoded
+  d: string
+}
 
-  // Private key, typically base64url encoded
-  d?: string
-
-  // Other JWK properties, see RFC
-  dp?: string
-  dq?: string
-  e?: string
-  k?: string
-  n?: string
+/**
+ * RSA keys. CRT parameters (p, q, dp, dq, qi) are RECOMMENDED but optional
+ * per RFC 7518; only `d` is required for a private RSA JWK.
+ */
+export interface IRsaJwkCore {
+  kty: 'RSA'
+  // Modulus and public exponent, base64url-encoded
+  n: string
+  e: string
+  alg?: string
+  kid?: string
+  use?: 'sig' | 'enc'
+}
+export interface IRsaPublicJwk extends IRsaJwkCore {
+  d?: never
+  p?: never
+  q?: never
+  dp?: never
+  dq?: never
+  qi?: never
+}
+export interface IRsaSecretJwk extends IRsaJwkCore {
+  d: string
   p?: string
   q?: string
+  dp?: string
+  dq?: string
   qi?: string
-  y?: string
+}
 
-  [key: string]: unknown
+export type IPublicJwk = IEcPublicJwk | IOkpPublicJwk | IRsaPublicJwk
+export type ISecretJwk = IEcSecretJwk | IOkpSecretJwk | IRsaSecretJwk
+
+/**
+ * JWK-backed verification material -- contains public key material only.
+ *
+ * @see https://www.w3.org/TR/cid-1.0/#JsonWebKey
+ */
+export interface IJsonWebPublicKey extends IKeyPairCore {
+  publicKeyJwk: IPublicJwk
+}
+
+/**
+ * JWK-backed key pair -- serialization form holding both halves. Project to
+ * `IJsonWebPublicKey` before publishing in a DID or CID document.
+ */
+export interface IJsonWebKeyPair extends IJsonWebPublicKey {
+  secretKeyJwk: ISecretJwk
 }
 
 export interface ISignablePayload {

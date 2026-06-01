@@ -15,7 +15,7 @@
 
 ## Background
 
-If you're implementing the Verifiable Credential specification in Typescript,
+If you're implementing the Verifiable Credential specification in TypeScript,
 chances are that you're using a type definition for VerifiableCredentials
 and VerifiablePresentations. Many VC-related projects (Sphereon's Veramo, 
 LEF's LearnCard, Transmute's Verifiable Data) include the type definitions in
@@ -34,31 +34,9 @@ Inspired by / incorporates elements of other VC Typescript libraries:
 * https://github.com/learningeconomy/LearnCard (`/packages/learn-card-core/src/types/`)
 * Existing type definitions in DCC libraries (in `learner-credential-wallet` and others)
 
-### Versioning
-
-The version numbers of this npm module are meant to mirror the version numbers
-of the Verifiable Credentials Data Model specification. Developers are encouraged
-to specify which VC Data model version they're using. For example, currently,
-the VC DM 1.1 is the stable version:
-
-```
-"dependencies": {
-   "@interop/data-integrity-core": "^1.1.0"
-}
-```
-
-However, the VC DM 2.0 Working group is currently developing the second version
-of the specification (which will likely make breaking changes). So, in the future:
-
-```
-"dependencies": {
-   "@interop/data-integrity-core": "^3.0.0"
-}
-```
-
 ## Install
 
-- Node.js 16+ is recommended.
+- Node.js 20+ is recommended.
 
 ### NPM
 
@@ -92,7 +70,8 @@ const vp = req.body.presentation as IVerifiablePresentation
 * `IVerifiableCredential` and `IVerifiablePresentation`
 * `IOpenBadgeCredentialV3` (for OBv3 VCs)
 * `IDidCoreDocument` and its children, `IDidDocument_v1_0` and `IDidDocument_v1_1`
-* `IKeyPair` and its children, such as `IVerificationKeyPair2020` and `IKeyAgreementKeyPair2020`
+* `IKeyPair` key description interface and its children, such as `IVerificationKeyPair2020` and `IKeyAgreementKeyPair2020`
+* `AbstractKeyPair` abstract class (IKeyPair + signers, verifiers, and so on)
 * `ISigner`
 * ... others (see individual exports in `/src`)
 * `IZcap` and related interfaces (`IRootZcap`, `IDelegatedZcap`, `IZcapLike`, and `ICapabilityDelegationProof`)

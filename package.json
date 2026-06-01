@@ -1,6 +1,6 @@
 {
-  "name": "@interop/ssi",
-  "description": "TypeScript types and definitions for the SSI ecosystem - cryptographic keys, DIDs, proofs, Verifiable Credentials, zCaps and related concepts.",
+  "name": "@interop/data-integrity-core",
+  "description": "TypeScript types, definitions, and base classes for the SSI ecosystem - cryptographic keys, DIDs, proofs, Verifiable Credentials, zCaps and related concepts.",
   "version": "5.5.0",
   "type": "module",
   "scripts": {
@@ -88,8 +88,8 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/interop-alliance/data-integrity.git"
+    "url": "git+https://github.com/interop-alliance/data-integrity-core.git"
   },
-  "homepage": "https://github.com/interop-alliance/data-integrity",
-  "bugs": "https://github.com/interop-alliance/data-integrity/issues"
+  "homepage": "https://github.com/interop-alliance/data-integrity-core",
+  "bugs": "https://github.com/interop-alliance/data-integrity-core/issues"
 }

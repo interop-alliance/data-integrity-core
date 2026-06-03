@@ -1,5 +1,9 @@
 # @interop/data-integrity-core Changelog
 
+## 6.1.2 - 
+### Fixed
+- Add a default export to `package.json`.
+
 ## 6.1.1 - 2026-06-02
 ### Fixed
 - Re-export `Loader.js` (`IDocumentLoader`, `IRemoteDocument`) from the package

@@ -1,6 +1,6 @@
 # @interop/data-integrity-core Changelog
 
-## Unreleased - TBD
+## 6.1.1 - 2026-06-02
 ### Fixed
 - Re-export `Loader.js` (`IDocumentLoader`, `IRemoteDocument`) from the package
   root, so they are importable from `@interop/data-integrity-core` as the README

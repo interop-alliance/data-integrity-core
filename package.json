@@ -47,7 +47,8 @@
     "./zcap": {
       "types": "./dist/ZCap.d.ts",
       "default": "./dist/ZCap.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "module": "dist/index.js",
   "browser": "dist/index.js",

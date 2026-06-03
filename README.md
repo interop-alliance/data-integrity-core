@@ -65,6 +65,17 @@ import { IVerifiableCredential, IVerifiablePresentation } from '@interop/data-in
 const vp = req.body.presentation as IVerifiablePresentation
 ```
 
+**Import everything from the package root.** The root entry point
+(`@interop/data-integrity-core`) re-exports every type, interface, and class
+in this package, and is the recommended single import path. The package is
+types-only with `"sideEffects": false`, so importing from the root is fully
+tree-shakeable.
+
+The subpath exports (`/did`, `/keypair`, `/loader`, `/vcdm`, `/zcap`) are
+optional and exist only for narrower imports; each re-exports a subset of what
+the root already provides. You never need a subpath to reach a type listed
+below.
+
 ### Exported Types/Interfaces
 
 * `IVerifiableCredential` and `IVerifiablePresentation`

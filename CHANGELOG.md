@@ -1,5 +1,15 @@
 # @interop/data-integrity-core Changelog
 
+## Unreleased - TBD
+### Fixed
+- Re-export `Loader.js` (`IDocumentLoader`, `IRemoteDocument`) from the package
+  root, so they are importable from `@interop/data-integrity-core` as the README
+  documents (previously only reachable via the `/loader` subpath).
+
+### Added
+- Expose `./package.json` in the `exports` map so tooling can resolve it without
+  reaching into `node_modules` directly.
+
 ## 6.1.0 - 2026-06-01
 ### Added
 - Add `IProofDescription` interface (a Data Integrity proof, or the proof

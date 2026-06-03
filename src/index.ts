@@ -4,6 +4,7 @@
 export * from './LD.js'
 export * from './DID.js'
 export * from './KeyPair.js'
+export * from './Loader.js'
 export * from './VCDM.js'
 export * from './OBv3.js'
 export * from './ZCap.js'

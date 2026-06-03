@@ -1,6 +1,6 @@
 # @interop/data-integrity-core Changelog
 
-## 6.1.2 - 
+## 6.1.2 - 2026-06-03
 ### Fixed
 - Add a default export to `package.json`.
 

@@ -1,6 +1,6 @@
 # @interop/data-integrity-core Changelog
 
-## 6.4.0 - TBD
+## 6.4.0 - 2026-06-08
 ### Added
 - Add `ILDContext` (in `./LD`): the JSON-LD `@context` value type,
   `string | Array<string | Record<string, unknown>>`.

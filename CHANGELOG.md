@@ -1,6 +1,6 @@
 # @interop/data-integrity-core Changelog
 
-## 6.3.0 - TBD
+## 6.3.0 - 2026-06-08
 ### Added
 - Add a `./Cipher` section with shared JOSE/JWE types and runtime contracts:
   `IJWE`, `IEPK`, `IRecipient`, `IRecipientHeader`, `IKeyResolver`,

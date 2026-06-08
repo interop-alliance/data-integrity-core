@@ -5,13 +5,13 @@ export type IKeyPair =
   | IVerificationKeyPair2018
   | IVerificationKeyPair2020
   | IMultikeyPair
-  | IJsonWebKeyPair
+  | IJSONWebKeyPair
 
 export type IPublicKey =
   | IPublicKey2018
   | IPublicKey2020
   | IPublicMultikey
-  | IJsonWebPublicKey
+  | IJSONWebPublicKey
 
 export interface IKeyPairCore {
   '@context'?: string | string[]
@@ -80,7 +80,7 @@ export type IMultikeyDocument = IPublicMultikey | IMultikeyPair
 /**
  * EC keys: P-256, P-384, P-521, secp256k1.
  */
-export interface IEcJwkCore {
+export interface IECJWKCore {
   kty: 'EC'
   crv: 'P-256' | 'P-384' | 'P-521' | 'secp256k1'
   // Public coordinates, base64url-encoded
@@ -90,10 +90,10 @@ export interface IEcJwkCore {
   kid?: string
   use?: 'sig' | 'enc'
 }
-export interface IEcPublicJwk extends IEcJwkCore {
+export interface IECPublicJWK extends IECJWKCore {
   d?: never
 }
-export interface IEcSecretJwk extends IEcJwkCore {
+export interface IECSecretJWK extends IECJWKCore {
   // Private scalar, base64url-encoded
   d: string
 }
@@ -101,7 +101,7 @@ export interface IEcSecretJwk extends IEcJwkCore {
 /**
  * OKP keys: Ed25519, Ed448 (signing); X25519, X448 (key agreement).
  */
-export interface IOkpJwkCore {
+export interface IOKPJWKCore {
   kty: 'OKP'
   crv: 'Ed25519' | 'Ed448' | 'X25519' | 'X448'
   // Public key, base64url-encoded
@@ -110,10 +110,10 @@ export interface IOkpJwkCore {
   kid?: string
   use?: 'sig' | 'enc'
 }
-export interface IOkpPublicJwk extends IOkpJwkCore {
+export interface IOKPPublicJWK extends IOKPJWKCore {
   d?: never
 }
-export interface IOkpSecretJwk extends IOkpJwkCore {
+export interface IOKPSecretJWK extends IOKPJWKCore {
   // Private key, base64url-encoded
   d: string
 }
@@ -122,7 +122,7 @@ export interface IOkpSecretJwk extends IOkpJwkCore {
  * RSA keys. CRT parameters (p, q, dp, dq, qi) are RECOMMENDED but optional
  * per RFC 7518; only `d` is required for a private RSA JWK.
  */
-export interface IRsaJwkCore {
+export interface IRSAJWKCore {
   kty: 'RSA'
   // Modulus and public exponent, base64url-encoded
   n: string
@@ -131,7 +131,7 @@ export interface IRsaJwkCore {
   kid?: string
   use?: 'sig' | 'enc'
 }
-export interface IRsaPublicJwk extends IRsaJwkCore {
+export interface IRSAPublicJWK extends IRSAJWKCore {
   d?: never
   p?: never
   q?: never
@@ -139,7 +139,7 @@ export interface IRsaPublicJwk extends IRsaJwkCore {
   dq?: never
   qi?: never
 }
-export interface IRsaSecretJwk extends IRsaJwkCore {
+export interface IRSASecretJWK extends IRSAJWKCore {
   d: string
   p?: string
   q?: string
@@ -148,34 +148,91 @@ export interface IRsaSecretJwk extends IRsaJwkCore {
   qi?: string
 }
 
-export type IPublicJwk = IEcPublicJwk | IOkpPublicJwk | IRsaPublicJwk
-export type ISecretJwk = IEcSecretJwk | IOkpSecretJwk | IRsaSecretJwk
+export type IPublicJWK = IECPublicJWK | IOKPPublicJWK | IRSAPublicJWK
+export type ISecretJWK = IECSecretJWK | IOKPSecretJWK | IRSASecretJWK
 
 /**
  * JWK-backed verification material -- contains public key material only.
  *
  * @see https://www.w3.org/TR/cid-1.0/#JsonWebKey
  */
-export interface IJsonWebPublicKey extends IKeyPairCore {
-  publicKeyJwk: IPublicJwk
+export interface IJSONWebPublicKey extends IKeyPairCore {
+  publicKeyJwk: IPublicJWK
 }
 
 /**
  * JWK-backed key pair -- serialization form holding both halves. Project to
- * `IJsonWebPublicKey` before publishing in a DID or CID document.
+ * `IJSONWebPublicKey` before publishing in a DID or CID document.
  */
-export interface IJsonWebKeyPair extends IJsonWebPublicKey {
-  secretKeyJwk: ISecretJwk
+export interface IJSONWebKeyPair extends IJSONWebPublicKey {
+  secretKeyJwk: ISecretJWK
 }
 
 /**
  * JsonWebKey verification-method document -- either public-only
- * (`IJsonWebPublicKey`) or with secret material (`IJsonWebKeyPair`). The union
+ * (`IJSONWebPublicKey`) or with secret material (`IJSONWebKeyPair`). The union
  * is the natural input type for importers: a `'secretKeyJwk' in document` check
- * narrows it to `IJsonWebKeyPair`. Both arms guarantee `publicKeyJwk`.
+ * narrows it to `IJSONWebKeyPair`. Both arms guarantee `publicKeyJwk`.
  * Used in various keys' from() factory methods.
  */
-export type IJsonWebKeyDocument = IJsonWebPublicKey | IJsonWebKeyPair
+export type IJSONWebKeyDocument = IJSONWebPublicKey | IJSONWebKeyPair
+
+/**
+ * @deprecated Renamed to IECJWKCore.
+ */
+export type IEcJwkCore = IECJWKCore
+/**
+ * @deprecated Renamed to IECPublicJWK.
+ */
+export type IEcPublicJwk = IECPublicJWK
+/**
+ * @deprecated Renamed to IECSecretJWK.
+ */
+export type IEcSecretJwk = IECSecretJWK
+/**
+ * @deprecated Renamed to IOKPJWKCore.
+ */
+export type IOkpJwkCore = IOKPJWKCore
+/**
+ * @deprecated Renamed to IOKPPublicJWK.
+ */
+export type IOkpPublicJwk = IOKPPublicJWK
+/**
+ * @deprecated Renamed to IOKPSecretJWK.
+ */
+export type IOkpSecretJwk = IOKPSecretJWK
+/**
+ * @deprecated Renamed to IRSAJWKCore.
+ */
+export type IRsaJwkCore = IRSAJWKCore
+/**
+ * @deprecated Renamed to IRSAPublicJWK.
+ */
+export type IRsaPublicJwk = IRSAPublicJWK
+/**
+ * @deprecated Renamed to IRSASecretJWK.
+ */
+export type IRsaSecretJwk = IRSASecretJWK
+/**
+ * @deprecated Renamed to IPublicJWK.
+ */
+export type IPublicJwk = IPublicJWK
+/**
+ * @deprecated Renamed to ISecretJWK.
+ */
+export type ISecretJwk = ISecretJWK
+/**
+ * @deprecated Renamed to IJSONWebPublicKey.
+ */
+export type IJsonWebPublicKey = IJSONWebPublicKey
+/**
+ * @deprecated Renamed to IJSONWebKeyPair.
+ */
+export type IJsonWebKeyPair = IJSONWebKeyPair
+/**
+ * @deprecated Renamed to IJSONWebKeyDocument.
+ */
+export type IJsonWebKeyDocument = IJSONWebKeyDocument
 
 export interface ISignablePayload {
   data: Uint8Array

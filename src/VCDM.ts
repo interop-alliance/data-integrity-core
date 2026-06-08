@@ -1,7 +1,7 @@
 /*!
  * Copyright (c) 2022-2026 Interop Alliance. All rights reserved.
  */
-import type { ILdType, ILinkedDataObject } from './LD.js'
+import type { ILDType, ILinkedDataObject } from './LD.js'
 
 export interface IIssuerObject extends ILinkedDataObject {
   id: string
@@ -57,7 +57,7 @@ export interface IVerifiableCredential extends ILinkedDataObject {
   id?: string
 
   // https://w3c.github.io/vc-data-model/#types
-  type: ILdType
+  type: ILDType
 
   // https://w3c.github.io/vc-data-model/#issuer
   issuer: string | IIssuerObject
@@ -122,7 +122,7 @@ export interface ICredentialSubject extends ILinkedDataObject {
 export interface ICredentialStatus extends ILinkedDataObject {
   // id and type are required for `credentialStatus` by the VC spec
   id?: string
-  type: ILdType
+  type: ILDType
   [x: string]: any
 
   // Each status type has its own required fields. For example:
@@ -135,20 +135,20 @@ export interface ICredentialStatus extends ILinkedDataObject {
 // https://w3c.github.io/vc-data-model/#data-schemas
 export interface ICredentialSchema {
   id: string
-  type: ILdType
+  type: ILDType
   [x: string]: any
 }
 
 // https://w3c.github.io/vc-data-model/#terms-of-use
 export interface ITermsOfUse {
   id?: string
-  type: ILdType
+  type: ILDType
   [x: string]: any
 }
 
 // https://w3c.github.io/vc-data-model/#refreshing
 export interface IRefreshService {
-  type: ILdType
+  type: ILDType
   [x: string]: any
 }
 
@@ -162,20 +162,20 @@ export interface IRelatedResource {
 // https://w3c.github.io/vc-data-model/#evidence
 export interface IEvidence {
   id?: string
-  type: ILdType
+  type: ILDType
   [x: string]: any
 }
 
 // https://w3c-ccg.github.io/confidence-method-spec
 export interface IConfidenceMethod {
   id?: string
-  type: ILdType
+  type: ILDType
   [x: string]: any
 }
 
 // https://w3c-ccg.github.io/vc-render-method
 export interface IRenderMethod {
-  type: ILdType
+  type: ILDType
   [x: string]: any
 }
 
@@ -184,7 +184,7 @@ export interface IVerifiablePresentation extends ILinkedDataObject {
 
   // A 'type' property is required for VPs
   // see https://www.w3.org/TR/vc-data-model/#presentations-0
-  type: ILdType
+  type: ILDType
 
   // Optional, expected to be a URI for the entity presenting the VP
   holder?: string

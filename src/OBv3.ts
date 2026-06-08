@@ -4,7 +4,7 @@
  */
 
 import type { IVerifiableCredential } from './VCDM.js'
-import type { ILdType, ILinkedDataObject } from './LD.js'
+import type { ILDType, ILinkedDataObject } from './LD.js'
 
 /**
  * OBv3 Credential
@@ -44,7 +44,7 @@ export interface IOpenBadgeSubject extends ILinkedDataObject {
 export interface IAchievement extends ILinkedDataObject {
   id: string
 
-  type: ILdType
+  type: ILDType
 
   name: string
 
@@ -90,7 +90,7 @@ export interface IAchievement extends ILinkedDataObject {
 /** Evidence supporting the achievement */
 export interface IOBv3Evidence extends ILinkedDataObject {
   id?: string
-  type: ILdType
+  type: ILDType
   name?: string
   description?: string
   url?: string
@@ -106,7 +106,7 @@ export interface ICriteria {
 
 /** Alignment between achievement and framework */
 export interface IAlignment {
-  type?: ILdType
+  type?: ILDType
   targetName?: string
   targetUrl?: string
   targetCode?: string
@@ -126,7 +126,7 @@ export interface IImage {
 /** Profile (issuer/creator) */
 export interface IProfile {
   id: string
-  type: ILdType
+  type: ILDType
   name?: string
   url?: string
   description?: string
@@ -135,7 +135,7 @@ export interface IProfile {
 
 /** EndorsementCredential */
 export interface IEndorsementCredential extends IVerifiableCredential {
-  type: ILdType
+  type: ILDType
   name?: string
   description?: string
   credentialSubject: IEndorsementSubject
@@ -144,7 +144,7 @@ export interface IEndorsementCredential extends IVerifiableCredential {
 /** EndorsementSubject */
 export interface IEndorsementSubject {
   id: string
-  type: ILdType
+  type: ILDType
   endorsementComment?: string
   [x: string]: any
 }
@@ -159,7 +159,7 @@ export interface IIdentifierEntry {
 /** Related achievement */
 export interface IRelated {
   id: string
-  type: ILdType
+  type: ILDType
   inLanguage?: string
   version?: string
 }
@@ -167,7 +167,7 @@ export interface IRelated {
 /** ResultDescription */
 export interface IResultDescription {
   id: string
-  type: ILdType
+  type: ILDType
   name: string
   resultType: string
   alignment?: IAlignment[]
@@ -182,7 +182,7 @@ export interface IResultDescription {
 /** RubricCriterionLevel */
 export interface IRubricCriterionLevel {
   id: string
-  type: ILdType
+  type: ILDType
   name: string
   description?: string
   level?: string

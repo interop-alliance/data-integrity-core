@@ -9,6 +9,12 @@
 export interface ICapabilityDelegationProof {
   /** The cryptographic suite type (e.g. `'Ed25519Signature2020'`). */
   type: string
+  /**
+   * The Data Integrity cryptosuite (e.g. `'eddsa-jcs-2022'`). Present when
+   * `type` is `'DataIntegrityProof'`; absent for legacy suites such as
+   * `'Ed25519Signature2020'`.
+   */
+  cryptosuite?: string
   /** ISO 8601 date-time the proof was created. */
   created: string
   /** Verification method URI used to sign. */

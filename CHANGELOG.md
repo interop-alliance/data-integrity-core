@@ -1,5 +1,12 @@
 # @interop/data-integrity-core Changelog
 
+## Unreleased - TBD
+### Added
+- Add an optional `cryptosuite` field to `ICapabilityDelegationProof` (in the
+  `./zcap` subpath). It is present when `type` is `'DataIntegrityProof'` (e.g.
+  `cryptosuite: 'eddsa-jcs-2022'`) and absent for legacy suites such as
+  `'Ed25519Signature2020'`.
+
 ## 6.1.2 - 2026-06-03
 ### Fixed
 - Add a default export to `package.json`.

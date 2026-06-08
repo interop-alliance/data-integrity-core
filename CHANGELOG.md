@@ -1,6 +1,6 @@
 # @interop/data-integrity-core Changelog
 
-## Unreleased - TBD
+## 6.2.0 - 2026-06-07
 ### Added
 - Add an optional `cryptosuite` field to `ICapabilityDelegationProof` (in the
   `./zcap` subpath). It is present when `type` is `'DataIntegrityProof'` (e.g.

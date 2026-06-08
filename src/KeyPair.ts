@@ -1,6 +1,8 @@
 /*!
  * Copyright (c) 2026 Interop Alliance.
  */
+import type { ILDContext } from './LD.js'
+
 export type IKeyPair =
   | IVerificationKeyPair2018
   | IVerificationKeyPair2020
@@ -14,7 +16,7 @@ export type IPublicKey =
   | IJSONWebPublicKey
 
 export interface IKeyPairCore {
-  '@context'?: string | string[]
+  '@context'?: ILDContext
   id?: string
   type?: string
   controller?: string
@@ -338,9 +340,10 @@ export abstract class AbstractKeyPair implements IKeyPairCore {
     checkRevoked?: boolean
   }): Promise<AbstractKeyPair> {
     if (checkContext) {
-      const fetchedDocContexts: string[] = Array.isArray(document['@context'])
-        ? document['@context']
-        : [document['@context'] as string]
+      const fetchedDocContexts: Array<string | Record<string, unknown>> =
+        Array.isArray(document['@context'])
+          ? document['@context']
+          : [document['@context'] as string]
 
       if (!fetchedDocContexts.includes(this.SUITE_CONTEXT)) {
         throw new Error(

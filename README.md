@@ -80,12 +80,14 @@ below.
 
 * `IVerifiableCredential` and `IVerifiablePresentation`
 * `IOpenBadgeCredentialV3` (for OBv3 VCs)
-* `IDidCoreDocument` and its children, `IDidDocument_v1_0` and `IDidDocument_v1_1`
+* `IDIDCoreDocument` and its children, `IDIDDocument_v1_0` and `IDIDDocument_v1_1`
 * `IKeyPair` key description interface and its children, such as `IVerificationKeyPair2020` and `IKeyAgreementKeyPair2020`
 * `AbstractKeyPair` abstract class (IKeyPair + signers, verifiers, and so on)
 * `ISigner`
 * `IDocumentLoader` and `IRemoteDocument`.
 * `IZcap` and related interfaces (`IRootZcap`, `IDelegatedZcap`, `IZcapLike`, and `ICapabilityDelegationProof`)
+* `IJWE` and related JOSE types (`IRecipient`, `IEPK`, `IKeyResolver`, `IKeyAgreementKey`, `IHMAC`)
+* `IEDVDocument` and related EDV types (`IEncryptedDocument`, `IEDVConfig`, `IEDVChunk`, `IIndexEntry`, `IEDVQuery`)
 
 ## Contribute
 

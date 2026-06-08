@@ -1,5 +1,24 @@
 # @interop/data-integrity-core Changelog
 
+## 6.3.0 - TBD
+### Added
+- Add a `./Cipher` section with shared JOSE/JWE types and runtime contracts:
+  `IJWE`, `IEPK`, `IRecipient`, `IRecipientHeader`, `IKeyResolver`,
+  `IKeyAgreementKey` (the runtime key-agreement contract, a sibling of
+  `ISigner` / `IVerifier`), and `IHMAC`.
+- Add an `./EDV` section with the Encrypted Data Vault document and
+  configuration model: `IEDVDocument`, `IEncryptedDocument`,
+  `IEDVDocumentStream`, `IEDVChunk`, `IEDVConfig`, `IIndexEntry`,
+  `IIndexAttribute`, and `IEDVQuery`.
+
+### Changed
+- Standardize type names on all-caps initialisms -- e.g. `IPublicJwk` to
+  `IPublicJWK`, `IEcPublicJwk` to `IECPublicJWK`, `IRsaSecretJwk` to
+  `IRSASecretJWK`, `IOkpPublicJwk` to `IOKPPublicJWK`, `IJsonWebPublicKey` to
+  `IJSONWebPublicKey`, `IDidDocument` to `IDIDDocument`, and `ILdType` to
+  `ILDType`. The previous PascalCase names remain exported as `@deprecated`
+  aliases for backwards compatibility.
+
 ## 6.2.0 - 2026-06-07
 ### Added
 - Add an optional `cryptosuite` field to `ICapabilityDelegationProof` (in the

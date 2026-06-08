@@ -1,7 +1,7 @@
 /*!
  * Copyright (c) 2022-2026 Interop Alliance. All rights reserved.
  */
-import type { ILDType, ILinkedDataObject } from './LD.js'
+import type { ILDContext, ILDType, ILinkedDataObject } from './LD.js'
 
 export interface IIssuerObject extends ILinkedDataObject {
   id: string
@@ -36,7 +36,7 @@ export interface IProofDescription {
   nonce?: string
   // https://www.w3.org/TR/vc-data-integrity/#proof-chains
   previousProof?: string | string[]
-  '@context'?: string | Array<string | object>
+  '@context'?: ILDContext
 
   // Any additional cryptosuite-defined terms
   [x: string]: unknown
@@ -180,7 +180,7 @@ export interface IRenderMethod {
 }
 
 export interface IVerifiablePresentation extends ILinkedDataObject {
-  '@context': any
+  '@context': ILDContext
 
   // A 'type' property is required for VPs
   // see https://www.w3.org/TR/vc-data-model/#presentations-0

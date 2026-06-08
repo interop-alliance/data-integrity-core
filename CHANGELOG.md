@@ -1,5 +1,18 @@
 # @interop/data-integrity-core Changelog
 
+## 6.4.0 - TBD
+### Added
+- Add `ILDContext` (in `./LD`): the JSON-LD `@context` value type,
+  `string | Array<string | Record<string, unknown>>`.
+
+### Changed
+- Widen `IKeyPairCore['@context']` from `string | string[]` to `ILDContext` so a
+  JSON-LD `@context` may include inline context objects (not just URL strings).
+  This is a backwards-compatible widening; existing `string` / `string[]` values
+  remain valid.
+- Type `IProofDescription['@context']` (was `string | Array<string | object>`)
+  and `IVerifiablePresentation['@context']` (was `any`) as `ILDContext`.
+
 ## 6.3.0 - 2026-06-08
 ### Added
 - Add a `./Cipher` section with shared JOSE/JWE types and runtime contracts:

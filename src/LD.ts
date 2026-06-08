@@ -10,6 +10,10 @@ export type ILDType = string | string[]
  */
 export type ILdType = ILDType
 
+// A JSON-LD `@context` value: a single URL, or an array of URLs and/or inline
+// context objects.
+export type ILDContext = string | Array<string | Record<string, unknown>>
+
 // General purpose Image object, used in VCs etc
 export interface IImageObject {
   id: string

@@ -1,5 +1,17 @@
 # @interop/data-integrity-core Changelog
 
+## 7.0.0 - TBD
+### Changed
+- **BREAKING**: `AbstractKeyPair.export()` is now `async` and returns
+  `Promise<IKeyPair>` (was a synchronous `IKeyPair`). This lets suites whose key
+  material requires asynchronous serialization (e.g. the WebCrypto-backed ECDSA
+  suite, whose `subtle.exportKey` is async) override `export()` while extending
+  `AbstractKeyPair`, rather than maintaining a parallel key-pair interface.
+  Synchronous suites (e.g. Ed25519) may still implement `export()` synchronously,
+  since callers `await` the result. Callers must now `await keyPair.export(...)`;
+  the cryptographic signing/verification path is unaffected, as it goes through
+  `signer()` / `verifier()` rather than `export()`.
+
 ## 6.4.0 - 2026-06-08
 ### Added
 - Add `ILDContext` (in `./LD`): the JSON-LD `@context` value type,

@@ -378,21 +378,28 @@ export abstract class AbstractKeyPair implements IKeyPairCore {
    * NOTE: Subclasses MUST override this method (and add the exporting of
    * their public and private key material).
    *
+   * Returns a `Promise` so that suites whose key material requires asynchronous
+   * serialization (e.g. the WebCrypto-backed ECDSA suite, whose
+   * `subtle.exportKey` is async) can override it. Suites with synchronous key
+   * material may keep a synchronous method body (an `async export()` that does
+   * no awaiting); the override's return type must still be `Promise<IKeyPair>`,
+   * and callers `await` the result either way.
+   *
    * @param [options] {object} - Options hashmap.
    * @param [options.publicKey] {boolean} - Export public key material?
    * @param [options.secretKey] {boolean} - Export secret key material?
    * @param [options.includeContext] {boolean} - Include the suite context?
    *
-   * @returns {IKeyPair} A public key object.
+   * @returns {Promise<IKeyPair>} A public key object.
    */
-  export({
+  async export({
     publicKey = false,
     secretKey = false
   }: {
     publicKey?: boolean
     secretKey?: boolean
     includeContext?: boolean
-  } = {}): IKeyPair {
+  } = {}): Promise<IKeyPair> {
     if (!publicKey && !secretKey) {
       throw new Error(
         'Export requires specifying either "publicKey" or "secretKey".'

@@ -1,6 +1,6 @@
 # @interop/data-integrity-core Changelog
 
-## 7.0.0 - TBD
+## 7.0.0 - 2026-06-09
 ### Changed
 - **BREAKING**: `AbstractKeyPair.export()` is now `async` and returns
   `Promise<IKeyPair>` (was a synchronous `IKeyPair`). This lets suites whose key

@@ -1,5 +1,22 @@
 # @interop/data-integrity-core Changelog
 
+## 8.0.0 - TBD
+### Added
+- Add `IRecipientTemplate`: the pre-encryption JWE recipient input -- just a
+  `header` carrying `kid`/`alg`, before key agreement fills in the rest.
+  `IRecipient` now `extends IRecipientTemplate`, adding the wrapped
+  `encrypted_key`. Build unencrypted recipient inputs with `IRecipientTemplate`
+  and use `IRecipient` for recipients as they appear in a serialized JWE.
+
+### Changed
+- **BREAKING**: Tightened the JWE recipient types to match a serialized JWE.
+  `IRecipientHeader.kid` and `IRecipientHeader.alg` are now required (were
+  optional); `IRecipient.encrypted_key` is now required (was optional); and
+  `IRecipient` no longer permits arbitrary extra properties (its index signature
+  was removed). Code that typed pre-encryption recipient inputs as `IRecipient`
+  should switch to the new `IRecipientTemplate`. `IRecipientHeader` still allows
+  additional properties.
+
 ## 7.0.0 - 2026-06-09
 ### Changed
 - **BREAKING**: `AbstractKeyPair.export()` is now `async` and returns

@@ -24,8 +24,8 @@ export interface IEPK {
  * The JWE recipient header.
  */
 export interface IRecipientHeader {
-  kid?: string
-  alg?: string
+  kid: string
+  alg: string
   epk?: IEPK
   apu?: string
   apv?: string
@@ -33,12 +33,21 @@ export interface IRecipientHeader {
 }
 
 /**
- * A JWE recipient.
+ * A JWE recipient template -- the pre-encryption input describing who a JWE
+ * should be encrypted to. The key-agreement `header` (`kid`/`alg`) is known up
+ * front; the `epk`/`apu`/`apv` and `encrypted_key` are filled in during
+ * encryption, producing a complete `IRecipient`.
  */
-export interface IRecipient {
+export interface IRecipientTemplate {
   header: IRecipientHeader
-  encrypted_key?: string
-  [key: string]: unknown
+}
+
+/**
+ * A JWE recipient, as it appears in a serialized JWE. Carries the wrapped
+ * content-encryption key (`encrypted_key`) alongside its key-agreement header.
+ */
+export interface IRecipient extends IRecipientTemplate {
+  encrypted_key: string
 }
 
 /**

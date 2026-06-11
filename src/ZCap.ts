@@ -70,6 +70,12 @@ export interface IDelegatedZcap {
   expires: string
   /** The capability delegation proof(s). */
   proof: ICapabilityDelegationProof | ICapabilityDelegationProof[]
+  /**
+   * Optional caller-chosen reference identifier. Not part of the zCap data
+   * model proper; some EDV server endpoints (e.g. revocation) accept it on the
+   * posted capability for application-level bookkeeping.
+   */
+  referenceId?: string
 }
 
 /**

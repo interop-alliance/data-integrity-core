@@ -1,6 +1,6 @@
 # @interop/data-integrity-core Changelog
 
-## 8.0.0 - TBD
+## 8.0.0 - 2026-06-12
 ### Added
 - Add `IRecipientTemplate`: the pre-encryption JWE recipient input -- just a
   `header` carrying `kid`/`alg`, before key agreement fills in the rest.

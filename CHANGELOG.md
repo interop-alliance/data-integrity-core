@@ -1,6 +1,6 @@
 # @interop/data-integrity-core Changelog
 
-## Unreleased - TBD
+## 8.1.0 - 2026-06-14
 ### Added
 - Add `SHA256HMACKey`: a reference, KMS-free implementation of the `IHMAC`
   contract (HMAC-SHA-256) used to blind EDV indexable attributes, backed by the

@@ -59,4 +59,57 @@ describe('SHA256HMACKey', () => {
       SHA256HMACKey.from({ id: 'urn:example:hmac', type: 'Sha256HmacKey2019' })
     ).rejects.toThrow(/secretKeyJwk/)
   })
+
+  // HMAC-SHA-256 is deterministic: a fixed key over fixed data always yields
+  // the same tag. These known-answer vectors are RFC 4231 (Identifiers and
+  // Test Cases for HMAC-SHA-256), with the key material expressed as the
+  // base64url-encoded `k` of an `oct` JWK.
+  describe('RFC 4231 known-answer vectors', () => {
+    const toHex = (bytes: Uint8Array) =>
+      [...bytes].map(byte => byte.toString(16).padStart(2, '0')).join('')
+
+    const vectors = [
+      {
+        name: 'Test Case 1 (0x0b x20 key, "Hi There")',
+        k: 'CwsLCwsLCwsLCwsLCwsLCwsLCws',
+        data: 'Hi There',
+        tag: 'b0344c61d8db38535ca8afceaf0bf12b881dc200c9833da726e9376c2e32cff7'
+      },
+      {
+        name: 'Test Case 2 ("Jefe" key, "what do ya want for nothing?")',
+        k: 'SmVmZQ',
+        data: 'what do ya want for nothing?',
+        tag: '5bdcc146bf60754e6a042426089575c75a003f089d2739839dec58b964ec3843'
+      }
+    ]
+
+    for (const { name, k, data, tag } of vectors) {
+      it(`reproduces ${name}`, async () => {
+        const hmac = await SHA256HMACKey.from({
+          id: 'urn:example:hmac',
+          type: 'Sha256HmacKey2019',
+          secretKeyJwk: { kty: 'oct', alg: 'HS256', k }
+        })
+        const signature = await hmac.sign({
+          data: new TextEncoder().encode(data)
+        })
+        expect(toHex(signature)).toBe(tag)
+
+        // verify() accepts the known-answer tag and rejects a tampered one.
+        const knownTag = Uint8Array.from(
+          tag.match(/../g)!.map(byte => parseInt(byte, 16))
+        )
+        expect(
+          await hmac.verify({
+            data: new TextEncoder().encode(data),
+            signature: knownTag
+          })
+        ).toBe(true)
+        const tampered = new TextEncoder().encode(`${data} `)
+        expect(
+          await hmac.verify({ data: tampered, signature: knownTag })
+        ).toBe(false)
+      })
+    }
+  })
 })

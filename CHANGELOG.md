@@ -1,5 +1,14 @@
 # @interop/data-integrity-core Changelog
 
+## Unreleased - TBD
+### Added
+- Add `SHA256HMACKey`: a reference, KMS-free implementation of the `IHMAC`
+  contract (HMAC-SHA-256) used to blind EDV indexable attributes, backed by the
+  global WebCrypto subtle API (isomorphic, no dependencies). Co-located with the
+  `IHMAC` interface it satisfies. Serializes via JWK (`kty: 'oct'`) through
+  `export({ secretKey })` / `from()`; its `type` is the protocol string
+  `'Sha256HmacKey2019'`. Also exports the serialized-form type `ISHA256HMACKey`.
+
 ## 8.0.0 - 2026-06-12
 ### Added
 - Add `IRecipientTemplate`: the pre-encryption JWE recipient input -- just a

@@ -1,6 +1,6 @@
 # @interop/data-integrity-core Changelog
 
-## 8.2.0 - TBD
+## 8.2.0 - 2026-07-10
 ### Added
 - Add optional `cursor` pagination field to `IEDVQuery`.
 

@@ -134,4 +134,10 @@ export interface IEDVQuery {
   count?: boolean
   limit?: number
   returnDocuments?: boolean
+  /**
+   * Opaque pagination cursor. A server that paginates query results returns it
+   * alongside `hasMore: true`; the client passes it back verbatim to fetch the
+   * next page.
+   */
+  cursor?: string
 }

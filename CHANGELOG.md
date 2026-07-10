@@ -1,5 +1,9 @@
 # @interop/data-integrity-core Changelog
 
+## 8.2.0 - TBD
+### Added
+- Add optional `cursor` pagination field to `IEDVQuery`.
+
 ## 8.1.0 - 2026-06-14
 ### Added
 - Add `SHA256HMACKey`: a reference, KMS-free implementation of the `IHMAC`

@@ -1,6 +1,6 @@
 # @interop/data-integrity-core Changelog
 
-## 8.3.0 - TBD
+## 8.3.0 - 2026-07-17
 ### Added
 - Add DID resolution types (ported from `did-resolver`'s `resolver.ts`, with
   I-prefixed names and stricter typing): `IDIDResolutionOptions`,

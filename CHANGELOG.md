@@ -1,5 +1,29 @@
 # @interop/data-integrity-core Changelog
 
+## 8.3.0 - TBD
+### Added
+- Add DID resolution types (ported from `did-resolver`'s `resolver.ts`, with
+  I-prefixed names and stricter typing): `IDIDResolutionOptions`,
+  `IDIDResolutionMetadata`, `IDIDDocumentMetadata`, and `IDIDResolutionResult`.
+  The result type uses this package's own `ILDContext` for `@context` and
+  `IDIDDocument | null` for `didDocument`.
+- Add `Extensible` (`Record<string, unknown>`): an object type that permits
+  arbitrary additional properties, used by the resolution metadata and options
+  types to admit spec-allowed extension properties. Undeclared property reads
+  come back as `unknown`; DID method packages wanting typed extension
+  properties should augment the interfaces via `declare module` instead.
+- Add the shared DID resolution error vocabulary: `IDIDResolutionErrorCode`
+  (the DID Resolution spec's registered codes -- `invalidDid`, `invalidDidUrl`,
+  `invalidOptions`, `methodNotSupported`, `notFound`,
+  `representationNotSupported`, `internalError` -- plus a `(string & {})` tail
+  for method-specific codes), `IProblemDetails` (RFC 9457 `type`/`title`/
+  `detail`), and a `problemDetails` field on `IDIDResolutionMetadata`.
+- Add `DIDResolutionError`, an `Error` subclass carrying `code` and optional
+  `problemDetails`, bridging the two resolution error channels: throw it from
+  exception-based APIs (e.g. a DID method driver's `get()`), or call its
+  `toResolutionResult()` to render the same failure as a spec resolution-result
+  envelope.
+
 ## 8.2.0 - 2026-07-10
 ### Added
 - Add optional `cursor` pagination field to `IEDVQuery`.

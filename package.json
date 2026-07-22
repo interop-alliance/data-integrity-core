@@ -45,6 +45,16 @@
       "types": "./dist/VCDM.d.ts",
       "default": "./dist/VCDM.js"
     },
+    "./vpr": {
+      "types": "./dist/VPR.d.ts",
+      "default": "./dist/VPR.js"
+    },
+    "./guards": {
+      "types": "./dist/Guards.d.ts",
+      "react-native": "./dist/Guards.js",
+      "import": "./dist/Guards.js",
+      "default": "./dist/Guards.js"
+    },
     "./zcap": {
       "types": "./dist/ZCap.d.ts",
       "default": "./dist/ZCap.js"

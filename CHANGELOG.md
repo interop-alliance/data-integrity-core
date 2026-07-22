@@ -1,5 +1,26 @@
 # @interop/data-integrity-core Changelog
 
+## Unreleased - TBD
+### Added
+- Add `src/VPR.ts`: the Verifiable Presentation Request (VPR) type vocabulary
+  (VC API messages exchanged with a wallet). Exports `IVPRequest`, `IVPOffer`,
+  `IIssueRequest`, `IExchangeInvitation`, `IOid4VCIOffer`, `IVPRDetails`,
+  `IVPRInteract`, `IVPRQuery` (the three-member spec union of `IQueryByExample`,
+  `IDIDAuthenticationQuery`, and `IZcapQuery`), `ICredentialQuery`,
+  `IAcceptedCryptosuites`, `ICapabilityQueryDetail`, `IInvocationTarget`,
+  `IAllowedAction`, `WalletApiMessage`, and `WalletResponse` (whose optional
+  `appConnect` field is inert for wallets that do not implement App Connect).
+  Deprecated lower-case aliases are retained for existing importers:
+  `IVpRequest`, `IVpOffer`, `IVprDetails`, `IVprQuery`, and
+  `IDidAuthenticationQuery`. Available at the `./vpr` subpath. Types reuse the
+  package's own `IZcap` / `IVerifiableCredential` / `IVerifiablePresentation`.
+- Add `src/Guards.ts`: runtime shape guards and loose-shape normalizers over the
+  VC / DID vocabulary. Guards: `isVerifiableCredential` and
+  `isVerifiablePresentation` (inspect `type`), `isCredential`, `isDidDocument`,
+  and `isVerificationKey` (inspect `@context` / `type`), all taking `unknown`
+  input. Normalizers: `typeArray(type)`, `issuerId(issuer)`, and
+  `subjectId(credential)`. Available at the `./guards` subpath.
+
 ## 8.3.0 - 2026-07-17
 ### Added
 - Add DID resolution types (ported from `did-resolver`'s `resolver.ts`, with

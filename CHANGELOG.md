@@ -1,6 +1,6 @@
 # @interop/data-integrity-core Changelog
 
-## Unreleased - TBD
+## 8.4.0 - 2026-07-22
 ### Added
 - Add `src/VPR.ts`: the Verifiable Presentation Request (VPR) type vocabulary
   (VC API messages exchanged with a wallet). Exports `IVPRequest`, `IVPOffer`,

@@ -1,5 +1,13 @@
 # @interop/data-integrity-core Changelog
 
+## 8.4.1 - TBD
+
+### Changed
+
+- Docs: the `IInvocationTarget` JSDoc and test fixture use the
+  `https://w3id.org/byoe#` descriptor IRIs instead of the retired `urn:was:`
+  spellings.
+
 ## 8.4.0 - 2026-07-22
 ### Added
 - Add `src/VPR.ts`: the Verifiable Presentation Request (VPR) type vocabulary

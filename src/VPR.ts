@@ -162,8 +162,8 @@ export type IDIDAuthenticationQuery = {
 
 /**
  * A wallet-defined descriptor naming a storage target for a capability request,
- * used when the `invocationTarget` is not a plain URL (e.g. `urn:was:collection`
- * / `urn:was:public-collection` / `urn:was:space`).
+ * used when the `invocationTarget` is not a plain URL (e.g.
+ * `https://w3id.org/byoe#collection` / `#public-collection` / `#space`).
  */
 export type IInvocationTarget = {
   type?: string

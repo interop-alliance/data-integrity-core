@@ -87,7 +87,7 @@ describe('VPR vocabulary (compile-level fixtures)', () => {
 
   it('constructs a ZcapQuery (both type strings) with invocation targets', () => {
     const target: IInvocationTarget = {
-      type: 'urn:was:collection',
+      type: 'https://w3id.org/byoe#collection',
       contentType: 'application/vc',
       name: 'credentials'
     }

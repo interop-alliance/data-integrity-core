@@ -1,6 +1,13 @@
 # @interop/data-integrity-core Changelog
 
-## 8.4.1 - TBD
+## 8.5.0 - TBD
+
+### Added
+
+- `SHA256HMACKey.fromSecret({ id, secret })`: reconstruct the key from its raw
+  secret bytes via a WebCrypto `raw`-format import, so consumers holding the
+  unwrapped secret need no JWK round-trip (and a minimal `crypto.subtle` shim
+  without JWK support suffices, e.g. on React Native's Hermes).
 
 ### Changed
 

@@ -153,6 +153,34 @@ export class SHA256HMACKey implements IHMAC {
   }
 
   /**
+   * Reconstruct an HMAC key from its raw secret bytes. Imports via the
+   * WebCrypto `raw` format, so a minimal `crypto.subtle` shim (raw-format
+   * HMAC `importKey` + `sign`, e.g. on React Native's Hermes) suffices --
+   * no JWK parsing required.
+   *
+   * @param options {object}
+   * @param options.id {string}
+   * @param options.secret {Uint8Array}   the raw HMAC secret
+   * @returns {Promise<SHA256HMACKey>}
+   */
+  static async fromSecret({
+    id,
+    secret
+  }: {
+    id: string
+    secret: Uint8Array
+  }): Promise<SHA256HMACKey> {
+    const key = await crypto.subtle.importKey(
+      'raw',
+      secret as BufferSource,
+      { name: 'HMAC', hash: 'SHA-256' },
+      true,
+      ['sign', 'verify']
+    )
+    return new SHA256HMACKey({ id, key })
+  }
+
+  /**
    * Reconstruct an HMAC key from its serialized form (a JWK secret).
    *
    * @param document {ISHA256HMACKey}

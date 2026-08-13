@@ -48,6 +48,31 @@ describe('SHA256HMACKey', () => {
     expect([...again]).toEqual([...expected])
   })
 
+  it('imports raw secret bytes via fromSecret, matching the JWK path', async () => {
+    const secret = crypto.getRandomValues(new Uint8Array(32))
+    const data = new TextEncoder().encode('stable attribute')
+
+    const fromRaw = await SHA256HMACKey.fromSecret({
+      id: 'urn:example:hmac',
+      secret
+    })
+    expect(fromRaw.id).toBe('urn:example:hmac')
+    expect(fromRaw.type).toBe('Sha256HmacKey2019')
+
+    const fromJwk = await SHA256HMACKey.from({
+      id: 'urn:example:hmac',
+      type: 'Sha256HmacKey2019',
+      secretKeyJwk: {
+        kty: 'oct',
+        alg: 'HS256',
+        k: Buffer.from(secret).toString('base64url')
+      }
+    })
+    const rawTag = await fromRaw.sign({ data })
+    expect([...rawTag]).toEqual([...(await fromJwk.sign({ data }))])
+    expect(await fromJwk.verify({ data, signature: rawTag })).toBe(true)
+  })
+
   it('omits secret material from a public export', async () => {
     const hmac = await SHA256HMACKey.generate()
     const exported = await hmac.export()

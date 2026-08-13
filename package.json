@@ -1,7 +1,7 @@
 {
   "name": "@interop/data-integrity-core",
   "description": "TypeScript types, definitions, and base classes for the SSI ecosystem - cryptographic keys, DIDs, proofs, Verifiable Credentials, zCaps and related concepts.",
-  "version": "8.4.0",
+  "version": "8.5.0",
   "type": "module",
   "scripts": {
     "build": "pnpm run clear && tsc",
@@ -65,8 +65,6 @@
   "browser": "dist/index.js",
   "types": "dist/index.d.ts",
   "sideEffects": false,
-  "dependencies": {
-  },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.60.0",

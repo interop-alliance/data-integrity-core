@@ -55,6 +55,12 @@
       "import": "./dist/Guards.js",
       "default": "./dist/Guards.js"
     },
+    "./multihash": {
+      "types": "./dist/Multihash.d.ts",
+      "react-native": "./dist/Multihash.js",
+      "import": "./dist/Multihash.js",
+      "default": "./dist/Multihash.js"
+    },
     "./zcap": {
       "types": "./dist/ZCap.d.ts",
       "default": "./dist/ZCap.js"

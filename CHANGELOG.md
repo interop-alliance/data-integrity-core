@@ -1,5 +1,18 @@
 # @interop/data-integrity-core Changelog
 
+## 8.6.0 - TBD
+
+### Added
+
+- Add `src/Multihash.ts`: a pure multihash byte codec per the multiformats
+  multihash spec, with no hashing dependency of its own -- callers supply
+  their own digest bytes. Exports `MultihashAlgorithm` (`SHA2_256`,
+  `SHA2_384`, `SHA3_256`, `SHA3_384`), `createMultihash(digest, algorithm)`,
+  and `decodeMultihash(bytes)`. Available at the `./multihash` subpath.
+  Decoding is strict: varints are capped at 2 bytes with overlong
+  (non-canonical) encodings rejected, trailing bytes after the digest are
+  rejected, and unsupported algorithms are reported before length errors.
+
 ## 8.5.0 - 2026-08-13
 
 ### Added

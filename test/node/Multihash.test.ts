@@ -1,0 +1,198 @@
+import { createHash } from 'node:crypto'
+import { describe, it, expect } from 'vitest'
+import {
+  createMultihash,
+  decodeMultihash,
+  MultihashAlgorithm
+} from '../../src/index.js'
+
+function digestOf(algorithm: string, input: string): Uint8Array {
+  return new Uint8Array(createHash(algorithm).update(input).digest())
+}
+
+function hexToBytes(hex: string): Uint8Array {
+  return new Uint8Array(
+    hex.match(/../g)!.map((byte) => Number.parseInt(byte, 16))
+  )
+}
+
+describe('multihash', () => {
+  const sha256DigestBytes = digestOf('sha256', 'hello')
+
+  it('round-trips a sha2-256 digest', () => {
+    const multihash = createMultihash(
+      sha256DigestBytes,
+      MultihashAlgorithm.SHA2_256
+    )
+    expect(decodeMultihash(multihash)).toEqual({
+      algorithm: MultihashAlgorithm.SHA2_256,
+      digestLength: 32,
+      digest: sha256DigestBytes
+    })
+  })
+
+  // Known-answer vectors pin the exact byte layout; round-trip tests alone
+  // would not catch a mirrored encode/decode bug. Digest values verified
+  // against node:crypto; the Merkle-Damgard vector is the multihash spec's
+  // own worked example (https://github.com/multiformats/multihash).
+  const knownVectors: Array<{
+    name: string
+    nodeAlgorithm: string
+    input: string
+    algorithm: MultihashAlgorithm
+    hex: string
+  }> = [
+    {
+      name: 'sha2-256 spec example ("Merkle–Damgård")',
+      nodeAlgorithm: 'sha256',
+      input: 'Merkle–Damgård',
+      algorithm: MultihashAlgorithm.SHA2_256,
+      hex: '122041dd7b6443542e75701aa98a0c235951a28a0d851b11564d20022ab11d2589a8'
+    },
+    {
+      name: 'sha2-256 ("hello")',
+      nodeAlgorithm: 'sha256',
+      input: 'hello',
+      algorithm: MultihashAlgorithm.SHA2_256,
+      hex: '12202cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824'
+    },
+    {
+      name: 'sha2-384 ("hello")',
+      nodeAlgorithm: 'sha384',
+      input: 'hello',
+      algorithm: MultihashAlgorithm.SHA2_384,
+      hex: '203059e1748777448c69de6b800d7a33bbfb9ff1b463e44354c3553bcdb9c666fa90125a3c79f90397bdf5f6a13de828684f'
+    },
+    {
+      name: 'sha3-256 ("hello")',
+      nodeAlgorithm: 'sha3-256',
+      input: 'hello',
+      algorithm: MultihashAlgorithm.SHA3_256,
+      hex: '16203338be694f50c5f338814986cdf0686453a888b84f424d792af4b9202398f392'
+    },
+    {
+      name: 'sha3-384 ("hello")',
+      nodeAlgorithm: 'sha3-384',
+      input: 'hello',
+      algorithm: MultihashAlgorithm.SHA3_384,
+      hex: '1530720aea11019ef06440fbf05d87aa24680a2153df3907b23631e7177ce620fa1330ff07c0fddee54699a4c3ee0ee9d887'
+    }
+  ]
+
+  for (const vector of knownVectors) {
+    it(`matches the known vector for ${vector.name}`, () => {
+      const digest = digestOf(vector.nodeAlgorithm, vector.input)
+      const expectedBytes = hexToBytes(vector.hex)
+
+      expect(createMultihash(digest, vector.algorithm)).toEqual(expectedBytes)
+      expect(decodeMultihash(expectedBytes)).toEqual({
+        algorithm: vector.algorithm,
+        digestLength: digest.length,
+        digest
+      })
+    })
+  }
+
+  it('decodes a multihash from a view with a non-zero byteOffset', () => {
+    const multihash = createMultihash(
+      sha256DigestBytes,
+      MultihashAlgorithm.SHA2_256
+    )
+    const padded = new Uint8Array(multihash.length + 4)
+    padded.set(multihash, 4)
+    const view = padded.subarray(4)
+
+    expect(decodeMultihash(view)).toEqual({
+      algorithm: MultihashAlgorithm.SHA2_256,
+      digestLength: 32,
+      digest: sha256DigestBytes
+    })
+  })
+
+  it('rejects creation with a digest of the wrong length', () => {
+    expect(() =>
+      createMultihash(new Uint8Array(16), MultihashAlgorithm.SHA2_256)
+    ).toThrow('Invalid digest length for algorithm 0x12: expected 32, got 16')
+  })
+
+  it('rejects creation with an unsupported algorithm', () => {
+    expect(() =>
+      createMultihash(new Uint8Array(32), 0x99 as MultihashAlgorithm)
+    ).toThrow('Unsupported multihash algorithm: 0x99')
+  })
+
+  it('rejects multihashes that are too short', () => {
+    expect(() => decodeMultihash(new Uint8Array([0x12]))).toThrow('too short')
+  })
+
+  it('rejects a truncated algorithm varint', () => {
+    expect(() => decodeMultihash(new Uint8Array([0xff, 0xff]))).toThrow(
+      'Invalid varint'
+    )
+  })
+
+  it('rejects a truncated length varint', () => {
+    expect(() => decodeMultihash(new Uint8Array([0x12, 0xff]))).toThrow(
+      'Invalid varint: buffer too short'
+    )
+  })
+
+  it('rejects overlong (non-canonical) varint encodings', () => {
+    // [0x92, 0x00] is a 2-byte encoding of 0x12; only [0x12] is canonical
+    const overlong = new Uint8Array([0x92, 0x00, 0x20, ...sha256DigestBytes])
+    expect(() => decodeMultihash(overlong)).toThrow(
+      'Invalid varint: overlong encoding'
+    )
+  })
+
+  it('rejects varints longer than the supported maximum', () => {
+    const oversized = new Uint8Array([
+      0x12, 0xff, 0xff, 0xff, 0xff, 0x7f, ...sha256DigestBytes
+    ])
+    expect(() => decodeMultihash(oversized)).toThrow(
+      'Invalid varint: longer than 2 bytes'
+    )
+  })
+
+  it('rejects truncated digests', () => {
+    const multihash = createMultihash(
+      sha256DigestBytes,
+      MultihashAlgorithm.SHA2_256
+    )
+    expect(() => decodeMultihash(multihash.slice(0, 10))).toThrow(
+      'digest too short'
+    )
+  })
+
+  it('rejects trailing bytes after the digest', () => {
+    const multihash = createMultihash(
+      sha256DigestBytes,
+      MultihashAlgorithm.SHA2_256
+    )
+    const withTrailing = new Uint8Array([...multihash, 0xde, 0xad])
+    expect(() => decodeMultihash(withTrailing)).toThrow(
+      'unexpected trailing bytes'
+    )
+  })
+
+  it('rejects unsupported algorithms', () => {
+    expect(() =>
+      decodeMultihash(new Uint8Array([0x13, 0x02, 0xaa, 0xbb]))
+    ).toThrow('Unsupported multihash algorithm: 0x13')
+  })
+
+  it('reports an unsupported algorithm even when the digest is truncated', () => {
+    // sha2-512 (0x13) claiming 64 bytes but truncated: the algorithm error
+    // must win over the length error
+    const bytes = new Uint8Array([0x13, 0x40, ...new Uint8Array(10)])
+    expect(() => decodeMultihash(bytes)).toThrow(
+      'Unsupported multihash algorithm: 0x13'
+    )
+  })
+
+  it('rejects digests whose length does not match the algorithm', () => {
+    expect(() =>
+      decodeMultihash(new Uint8Array([0x12, 0x02, 0xaa, 0xbb]))
+    ).toThrow('Invalid digest length for algorithm 0x12: expected 32, got 2')
+  })
+})

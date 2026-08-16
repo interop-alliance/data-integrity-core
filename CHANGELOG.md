@@ -1,5 +1,21 @@
 # @interop/data-integrity-core Changelog
 
+## 8.7.0 - TBD
+
+### Added
+
+- `decodeMultihash(bytes, expectedAlgorithm?)`: an optional expected algorithm;
+  a decoded algorithm that differs is rejected, naming both. Omitting it keeps
+  the previous behavior.
+- `decodeMultikey({ multikey, expectedCodec })` at the `./multihash` subpath:
+  decodes a `z`-prefixed base58btc multikey (a multicodec-prefixed public key)
+  into its codec and raw key bytes, and exports `MultikeyCodec`
+  (`ED25519_PUB`, `X25519_PUB`). Decoding is strict: an unsupported codec is
+  rejected, both codecs require exactly 32 key bytes, and short or trailing
+  bytes are rejected.
+- New runtime dependency `@scure/base`, for its base58 codec. The module stays
+  hashing-free.
+
 ## 8.6.0 - 2026-08-15
 
 ### Added

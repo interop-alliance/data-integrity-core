@@ -1,9 +1,12 @@
 import { createHash } from 'node:crypto'
+import { base58 } from '@scure/base'
 import { describe, it, expect } from 'vitest'
 import {
   createMultihash,
   decodeMultihash,
-  MultihashAlgorithm
+  decodeMultikey,
+  MultihashAlgorithm,
+  MultikeyCodec
 } from '../../src/index.js'
 
 function digestOf(algorithm: string, input: string): Uint8Array {
@@ -194,5 +197,102 @@ describe('multihash', () => {
     expect(() =>
       decodeMultihash(new Uint8Array([0x12, 0x02, 0xaa, 0xbb]))
     ).toThrow('Invalid digest length for algorithm 0x12: expected 32, got 2')
+  })
+
+  it('accepts a matching expected algorithm', () => {
+    const multihash = createMultihash(
+      sha256DigestBytes,
+      MultihashAlgorithm.SHA2_256
+    )
+    expect(decodeMultihash(multihash, MultihashAlgorithm.SHA2_256)).toEqual({
+      algorithm: MultihashAlgorithm.SHA2_256,
+      digestLength: 32,
+      digest: sha256DigestBytes
+    })
+  })
+
+  it('rejects an algorithm other than the expected one', () => {
+    const multihash = createMultihash(
+      sha256DigestBytes,
+      MultihashAlgorithm.SHA2_256
+    )
+    expect(() =>
+      decodeMultihash(multihash, MultihashAlgorithm.SHA3_256)
+    ).toThrow('Unexpected multihash algorithm: expected 0x16, got 0x12')
+  })
+})
+
+describe('multikey', () => {
+  function multikeyOf(prefix: number[], keyBytes: Uint8Array): string {
+    return 'z' + base58.encode(new Uint8Array([...prefix, ...keyBytes]))
+  }
+
+  const keyBytes = new Uint8Array(32).map((_, index) => index + 1)
+  const x25519Multikey = multikeyOf([0xec, 0x01], keyBytes)
+  const ed25519Multikey = multikeyOf([0xed, 0x01], keyBytes)
+
+  it('decodes an x25519 multikey', () => {
+    expect(decodeMultikey({ multikey: x25519Multikey })).toEqual({
+      codec: MultikeyCodec.X25519_PUB,
+      keyBytes
+    })
+  })
+
+  it('decodes an ed25519 multikey', () => {
+    expect(decodeMultikey({ multikey: ed25519Multikey })).toEqual({
+      codec: MultikeyCodec.ED25519_PUB,
+      keyBytes
+    })
+  })
+
+  it('accepts a matching expected codec', () => {
+    expect(
+      decodeMultikey({
+        multikey: x25519Multikey,
+        expectedCodec: MultikeyCodec.X25519_PUB
+      })
+    ).toEqual({ codec: MultikeyCodec.X25519_PUB, keyBytes })
+  })
+
+  it('rejects a codec other than the expected one', () => {
+    expect(() =>
+      decodeMultikey({
+        multikey: ed25519Multikey,
+        expectedCodec: MultikeyCodec.X25519_PUB
+      })
+    ).toThrow('Unexpected multikey codec: expected 0xec, got 0xed')
+  })
+
+  it('rejects a multikey without the base58btc "z" prefix', () => {
+    expect(() => decodeMultikey({ multikey: x25519Multikey.slice(1) })).toThrow(
+      'Invalid multikey: expected a base58btc "z" prefix'
+    )
+  })
+
+  it('rejects a malformed base58btc payload', () => {
+    expect(() => decodeMultikey({ multikey: 'z0OIl' })).toThrow(
+      'Invalid multikey: malformed base58btc payload'
+    )
+  })
+
+  it('rejects an unsupported codec', () => {
+    // secp256k1-pub (0xe7) is a valid multicodec, but not supported here
+    expect(() =>
+      decodeMultikey({ multikey: multikeyOf([0xe7, 0x01], keyBytes) })
+    ).toThrow('Unsupported multikey codec: 0xe7')
+  })
+
+  it('rejects trailing bytes after the key', () => {
+    const tooLong = multikeyOf([0xec, 0x01], new Uint8Array(33))
+    expect(() => decodeMultikey({ multikey: tooLong })).toThrow(
+      'Invalid multikey: unexpected trailing bytes'
+    )
+  })
+
+  it('rejects a key shorter than the codec requires', () => {
+    const tooShort = multikeyOf([0xec, 0x01], new Uint8Array(31))
+    expect(() => decodeMultikey({ multikey: tooShort })).toThrow(
+      'Invalid key length for multikey codec 0xec: expected 32, got 31'
+    )
   })
 })

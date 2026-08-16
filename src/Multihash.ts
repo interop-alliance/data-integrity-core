@@ -2,12 +2,17 @@
  * A pure multihash byte codec, per the multiformats multihash spec
  * (https://github.com/multiformats/multihash): a varint-prefixed algorithm
  * identifier, a varint-prefixed digest length, and the raw digest bytes.
+ * Alongside it, a multikey decoder for the sibling multiformats layout --
+ * a varint-prefixed multicodec key type followed by the raw public key
+ * bytes -- carried as a base58btc multibase string.
  *
  * This module has no hashing dependency of its own -- callers compute the
  * digest (SHA-256, SHA-384, SHA3-256, SHA3-384, ...) with whatever runtime
  * primitive they already have and pass the resulting bytes in. It only
- * encodes and decodes the multihash byte layout.
+ * encodes and decodes the multihash byte layout. It stays hashing-free with
+ * the multikey decoder too: base58 is a pure codec, not a hash.
  */
+import { base58 } from '@scure/base'
 
 /**
  * Supported Multihash algorithm identifiers.
@@ -17,6 +22,22 @@ export enum MultihashAlgorithm {
   SHA2_384 = 0x20,
   SHA3_256 = 0x16,
   SHA3_384 = 0x15
+}
+
+/**
+ * Supported multikey (multicodec public key) identifiers.
+ */
+export enum MultikeyCodec {
+  ED25519_PUB = 0xed,
+  X25519_PUB = 0xec
+}
+
+/**
+ * Expected raw public key lengths for each multikey codec (in bytes).
+ */
+const KEY_LENGTHS: Record<MultikeyCodec, number> = {
+  [MultikeyCodec.ED25519_PUB]: 32,
+  [MultikeyCodec.X25519_PUB]: 32
 }
 
 /**
@@ -136,9 +157,15 @@ export function createMultihash(
  * Decodes a multihash, validating its algorithm and digest length.
  *
  * @param bytes {Uint8Array} The multihash bytes.
+ * @param [expectedAlgorithm] {MultihashAlgorithm} When supplied, the decoded
+ *   algorithm must match it, so a caller that only accepts one algorithm does
+ *   not have to compare after the fact.
  * @returns {{ algorithm: MultihashAlgorithm, digestLength: number, digest: Uint8Array }}
  */
-export function decodeMultihash(bytes: Uint8Array): {
+export function decodeMultihash(
+  bytes: Uint8Array,
+  expectedAlgorithm?: MultihashAlgorithm
+): {
   algorithm: MultihashAlgorithm
   digestLength: number
   digest: Uint8Array
@@ -158,6 +185,13 @@ export function decodeMultihash(bytes: Uint8Array): {
   if (expectedLength === undefined) {
     throw new Error(
       `Unsupported multihash algorithm: 0x${algorithm.toString(16)}`
+    )
+  }
+
+  // Reject an algorithm the caller does not accept before the rest of the input
+  if (expectedAlgorithm !== undefined && algorithm !== expectedAlgorithm) {
+    throw new Error(
+      `Unexpected multihash algorithm: expected 0x${expectedAlgorithm.toString(16)}, got 0x${algorithm.toString(16)}`
     )
   }
 
@@ -192,5 +226,78 @@ export function decodeMultihash(bytes: Uint8Array): {
     algorithm: algorithm as MultihashAlgorithm,
     digestLength,
     digest
+  }
+}
+
+/**
+ * Decodes a multikey -- a multicodec-prefixed public key, per the multiformats
+ * multicodec table (https://github.com/multiformats/multicodec) -- carried as
+ * a base58btc multibase string (the `z` prefix). The leading varint names the
+ * key type and the remaining bytes are the raw public key.
+ *
+ * The expectation parameter sits on the codec here and on the algorithm in
+ * `decodeMultihash`, because the two layouts carry different identifiers: a
+ * multihash has no multikey codec, and a multikey has no digest algorithm.
+ *
+ * Decoding stays hashing-free; base58 is a pure codec.
+ *
+ * @param options {object}
+ * @param options.multikey {string} The `z`-prefixed base58btc multikey.
+ * @param [options.expectedCodec] {MultikeyCodec} When supplied, the decoded
+ *   codec must match it.
+ * @returns {{ codec: MultikeyCodec, keyBytes: Uint8Array }} The decoded codec
+ *   and the raw public key bytes, without the multicodec prefix.
+ */
+export function decodeMultikey({
+  multikey,
+  expectedCodec
+}: {
+  multikey: string
+  expectedCodec?: MultikeyCodec
+}): { codec: MultikeyCodec; keyBytes: Uint8Array } {
+  if (!multikey.startsWith('z')) {
+    throw new Error('Invalid multikey: expected a base58btc "z" prefix')
+  }
+
+  let bytes: Uint8Array
+  try {
+    bytes = base58.decode(multikey.slice(1))
+  } catch (err) {
+    throw new Error('Invalid multikey: malformed base58btc payload', {
+      cause: err
+    })
+  }
+
+  // Decode the multicodec identifier
+  const { value: codec, bytesRead } = decodeVarint(bytes, 0)
+
+  // Verify the codec is supported before touching the rest of the input
+  const expectedLength = KEY_LENGTHS[codec as MultikeyCodec]
+  if (expectedLength === undefined) {
+    throw new Error(`Unsupported multikey codec: 0x${codec.toString(16)}`)
+  }
+
+  // Reject a codec the caller does not accept
+  if (expectedCodec !== undefined && codec !== expectedCodec) {
+    throw new Error(
+      `Unexpected multikey codec: expected 0x${expectedCodec.toString(16)}, got 0x${codec.toString(16)}`
+    )
+  }
+
+  // Require an exact-length key so each logical multikey has exactly one
+  // byte representation
+  const keyLength = bytes.length - bytesRead
+  if (keyLength < expectedLength) {
+    throw new Error(
+      `Invalid key length for multikey codec 0x${codec.toString(16)}: expected ${expectedLength}, got ${keyLength}`
+    )
+  }
+  if (keyLength > expectedLength) {
+    throw new Error('Invalid multikey: unexpected trailing bytes')
+  }
+
+  return {
+    codec: codec as MultikeyCodec,
+    keyBytes: bytes.slice(bytesRead)
   }
 }

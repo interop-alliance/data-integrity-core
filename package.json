@@ -111,5 +111,8 @@
     "url": "git+https://github.com/interop-alliance/data-integrity-core.git"
   },
   "homepage": "https://github.com/interop-alliance/data-integrity-core",
-  "bugs": "https://github.com/interop-alliance/data-integrity-core/issues"
+  "bugs": "https://github.com/interop-alliance/data-integrity-core/issues",
+  "dependencies": {
+    "@scure/base": "^2.3.0"
+  }
 }

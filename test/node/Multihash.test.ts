@@ -295,4 +295,106 @@ describe('multikey', () => {
       'Invalid key length for multikey codec 0xec: expected 32, got 31'
     )
   })
+
+  // The multi-byte codecs encode as two-byte varints; the prefixes are pinned
+  // here so a mirrored encode/decode bug cannot hide behind a shared helper.
+  const codecVectors: Array<{
+    name: string
+    prefix: number[]
+    codec: MultikeyCodec
+    keyLength: number
+  }> = [
+    {
+      name: 'ed25519-priv (32-byte seed)',
+      prefix: [0x80, 0x26],
+      codec: MultikeyCodec.ED25519_PRIV,
+      keyLength: 32
+    },
+    {
+      name: 'ed25519-priv (64-byte seed||pub)',
+      prefix: [0x80, 0x26],
+      codec: MultikeyCodec.ED25519_PRIV,
+      keyLength: 64
+    },
+    {
+      name: 'x25519-priv',
+      prefix: [0x82, 0x26],
+      codec: MultikeyCodec.X25519_PRIV,
+      keyLength: 32
+    },
+    {
+      name: 'p256-pub',
+      prefix: [0x80, 0x24],
+      codec: MultikeyCodec.P256_PUB,
+      keyLength: 33
+    },
+    {
+      name: 'p384-pub',
+      prefix: [0x81, 0x24],
+      codec: MultikeyCodec.P384_PUB,
+      keyLength: 49
+    },
+    {
+      name: 'p521-pub',
+      prefix: [0x82, 0x24],
+      codec: MultikeyCodec.P521_PUB,
+      keyLength: 67
+    },
+    {
+      name: 'p256-priv',
+      prefix: [0x86, 0x26],
+      codec: MultikeyCodec.P256_PRIV,
+      keyLength: 32
+    },
+    {
+      name: 'p384-priv',
+      prefix: [0x87, 0x26],
+      codec: MultikeyCodec.P384_PRIV,
+      keyLength: 48
+    },
+    {
+      name: 'p521-priv',
+      prefix: [0x88, 0x26],
+      codec: MultikeyCodec.P521_PRIV,
+      keyLength: 66
+    }
+  ]
+
+  for (const vector of codecVectors) {
+    it(`decodes a ${vector.name} multikey`, () => {
+      const bytes = new Uint8Array(vector.keyLength).map(
+        (_, index) => (index + 1) % 256
+      )
+      expect(
+        decodeMultikey({
+          multikey: multikeyOf(vector.prefix, bytes),
+          expectedCodec: vector.codec
+        })
+      ).toEqual({ codec: vector.codec, keyBytes: bytes })
+    })
+  }
+
+  it('rejects an ed25519-priv key of neither allowed length', () => {
+    const wrongLength = multikeyOf([0x80, 0x26], new Uint8Array(48))
+    expect(() => decodeMultikey({ multikey: wrongLength })).toThrow(
+      'Invalid key length for multikey codec 0x1300: expected 32 or 64, got 48'
+    )
+  })
+
+  it('rejects a p256-pub key that is not a compressed SEC1 point', () => {
+    const rawPoint = multikeyOf([0x80, 0x24], new Uint8Array(32))
+    expect(() => decodeMultikey({ multikey: rawPoint })).toThrow(
+      'Invalid key length for multikey codec 0x1200: expected 33, got 32'
+    )
+  })
+
+  it('rejects a private-key codec where the public one is expected', () => {
+    const ed25519PrivMultikey = multikeyOf([0x80, 0x26], new Uint8Array(32))
+    expect(() =>
+      decodeMultikey({
+        multikey: ed25519PrivMultikey,
+        expectedCodec: MultikeyCodec.ED25519_PUB
+      })
+    ).toThrow('Unexpected multikey codec: expected 0xed, got 0x1300')
+  })
 })

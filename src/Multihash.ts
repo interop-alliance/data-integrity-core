@@ -3,8 +3,8 @@
  * (https://github.com/multiformats/multihash): a varint-prefixed algorithm
  * identifier, a varint-prefixed digest length, and the raw digest bytes.
  * Alongside it, a multikey decoder for the sibling multiformats layout --
- * a varint-prefixed multicodec key type followed by the raw public key
- * bytes -- carried as a base58btc multibase string.
+ * a varint-prefixed multicodec key type followed by the raw key bytes --
+ * carried as a base58btc multibase string.
  *
  * This module has no hashing dependency of its own -- callers compute the
  * digest (SHA-256, SHA-384, SHA3-256, SHA3-384, ...) with whatever runtime
@@ -25,19 +25,40 @@ export enum MultihashAlgorithm {
 }
 
 /**
- * Supported multikey (multicodec public key) identifiers.
+ * Supported multikey (multicodec key) identifiers, public and private, for
+ * the Ed25519/X25519 and NIST P-curve suites.
  */
 export enum MultikeyCodec {
   ED25519_PUB = 0xed,
-  X25519_PUB = 0xec
+  X25519_PUB = 0xec,
+  ED25519_PRIV = 0x1300,
+  X25519_PRIV = 0x1302,
+  P256_PUB = 0x1200,
+  P384_PUB = 0x1201,
+  P521_PUB = 0x1202,
+  P256_PRIV = 0x1306,
+  P384_PRIV = 0x1307,
+  P521_PRIV = 0x1308
 }
 
 /**
- * Expected raw public key lengths for each multikey codec (in bytes).
+ * Allowed raw key lengths for each multikey codec (in bytes). A codec with
+ * more than one entry accepts any of them.
  */
-const KEY_LENGTHS: Record<MultikeyCodec, number> = {
-  [MultikeyCodec.ED25519_PUB]: 32,
-  [MultikeyCodec.X25519_PUB]: 32
+const KEY_LENGTHS: Record<MultikeyCodec, number[]> = {
+  [MultikeyCodec.ED25519_PUB]: [32],
+  [MultikeyCodec.X25519_PUB]: [32],
+  // 32 is the Multikey spec's seed; 64 is the legacy seed||pub form still
+  // emitted by default by some Ed25519 key implementations
+  [MultikeyCodec.ED25519_PRIV]: [32, 64],
+  [MultikeyCodec.X25519_PRIV]: [32],
+  // P-curve public keys are compressed SEC1 points only, per the Multikey spec
+  [MultikeyCodec.P256_PUB]: [33],
+  [MultikeyCodec.P384_PUB]: [49],
+  [MultikeyCodec.P521_PUB]: [67],
+  [MultikeyCodec.P256_PRIV]: [32],
+  [MultikeyCodec.P384_PRIV]: [48],
+  [MultikeyCodec.P521_PRIV]: [66]
 }
 
 /**
@@ -230,10 +251,15 @@ export function decodeMultihash(
 }
 
 /**
- * Decodes a multikey -- a multicodec-prefixed public key, per the multiformats
+ * Decodes a multikey -- a multicodec-prefixed key, per the multiformats
  * multicodec table (https://github.com/multiformats/multicodec) -- carried as
  * a base58btc multibase string (the `z` prefix). The leading varint names the
- * key type and the remaining bytes are the raw public key.
+ * key type and the remaining bytes are the raw key.
+ *
+ * Both the public- and private-key codecs of the Ed25519/X25519 and NIST
+ * P-curve suites are covered. The public and private codecs of one curve are
+ * distinct codecs, so an `ED25519_PUB` expectation still rejects an
+ * `ED25519_PRIV` multikey (and the other way round).
  *
  * The expectation parameter sits on the codec here and on the algorithm in
  * `decodeMultihash`, because the two layouts carry different identifiers: a
@@ -246,7 +272,7 @@ export function decodeMultihash(
  * @param [options.expectedCodec] {MultikeyCodec} When supplied, the decoded
  *   codec must match it.
  * @returns {{ codec: MultikeyCodec, keyBytes: Uint8Array }} The decoded codec
- *   and the raw public key bytes, without the multicodec prefix.
+ *   and the raw key bytes, without the multicodec prefix.
  */
 export function decodeMultikey({
   multikey,
@@ -272,8 +298,8 @@ export function decodeMultikey({
   const { value: codec, bytesRead } = decodeVarint(bytes, 0)
 
   // Verify the codec is supported before touching the rest of the input
-  const expectedLength = KEY_LENGTHS[codec as MultikeyCodec]
-  if (expectedLength === undefined) {
+  const allowedLengths = KEY_LENGTHS[codec as MultikeyCodec]
+  if (allowedLengths === undefined) {
     throw new Error(`Unsupported multikey codec: 0x${codec.toString(16)}`)
   }
 
@@ -284,16 +310,16 @@ export function decodeMultikey({
     )
   }
 
-  // Require an exact-length key so each logical multikey has exactly one
-  // byte representation
+  // Require one of the codec's allowed lengths so each logical multikey has
+  // exactly one byte representation
   const keyLength = bytes.length - bytesRead
-  if (keyLength < expectedLength) {
-    throw new Error(
-      `Invalid key length for multikey codec 0x${codec.toString(16)}: expected ${expectedLength}, got ${keyLength}`
-    )
-  }
-  if (keyLength > expectedLength) {
+  if (keyLength > Math.max(...allowedLengths)) {
     throw new Error('Invalid multikey: unexpected trailing bytes')
+  }
+  if (!allowedLengths.includes(keyLength)) {
+    throw new Error(
+      `Invalid key length for multikey codec 0x${codec.toString(16)}: expected ${allowedLengths.join(' or ')}, got ${keyLength}`
+    )
   }
 
   return {

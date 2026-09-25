@@ -1,5 +1,14 @@
 # @interop/data-integrity-core Changelog
 
+## 8.8.0 - TBD
+
+### Added
+
+- `IRootZcap.allowedAction` (optional), matching the reference zcap
+  implementation, which enforces a root capability's `allowedAction` against
+  the delegation chain. Also corrected the `IDelegatedZcap.allowedAction`
+  doc comment: an absent value permits whatever the parent allows.
+
 ## 8.7.1 - 2026-08-16
 
 ### Added

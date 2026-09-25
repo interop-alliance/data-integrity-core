@@ -44,6 +44,12 @@ export interface IRootZcap {
   controller: string | string[]
   /** Resource URI this capability grants access to (absolute URI). */
   invocationTarget: string
+  /**
+   * The action(s) the controller may perform. If absent, any action is
+   * allowed. If present, every delegated capability in the chain must restrict
+   * its own `allowedAction` to a subset of it.
+   */
+  allowedAction?: string | string[]
 }
 
 /**
@@ -62,8 +68,9 @@ export interface IDelegatedZcap {
   /** Resource URI this capability grants access to (absolute URI). */
   invocationTarget: string
   /**
-   * The action(s) the controller may perform; if absent, no actions are
-   * allowed (except for the root zCap).
+   * The action(s) the controller may perform. If absent, any action the parent
+   * allows is permitted; if the parent restricts actions, the child must too,
+   * and only to a subset of the parent's.
    */
   allowedAction?: string | string[]
   /** ISO 8601 date-time when this capability expires. */

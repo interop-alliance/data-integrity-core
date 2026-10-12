@@ -1,6 +1,6 @@
 # @interop/data-integrity-core Changelog
 
-## 8.9.0 - TBD
+## 8.9.0 - 2026-10-12
 
 ### Added
 

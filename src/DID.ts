@@ -29,12 +29,12 @@ export interface IVerificationMethodCore {
 }
 
 export interface IJSONWebKeyMethod extends IVerificationMethodCore {
-  type: 'JsonWebKey',
+  type: 'JsonWebKey'
   publicKeyJwk: IPublicJWK
 }
 
 export interface IMultikeyMethod extends IVerificationMethodCore {
-  type: 'Multikey',
+  type: 'Multikey'
   publicKeyMultibase: string
 }
 
@@ -225,9 +225,13 @@ export class DIDResolutionError extends Error {
   code: IDIDResolutionErrorCode
   problemDetails?: IProblemDetails
 
-  constructor (
+  constructor(
     message: string,
-    { code, problemDetails, cause }: {
+    {
+      code,
+      problemDetails,
+      cause
+    }: {
       code: IDIDResolutionErrorCode
       problemDetails?: IProblemDetails
       cause?: unknown
@@ -239,7 +243,7 @@ export class DIDResolutionError extends Error {
     this.problemDetails = problemDetails
   }
 
-  toResolutionResult (): IDIDResolutionResult {
+  toResolutionResult(): IDIDResolutionResult {
     const didResolutionMetadata: IDIDResolutionMetadata = { error: this.code }
     if (this.problemDetails !== undefined) {
       didResolutionMetadata.problemDetails = this.problemDetails
@@ -249,6 +253,47 @@ export class DIDResolutionError extends Error {
       didDocument: null,
       didDocumentMetadata: {}
     }
+  }
+}
+
+/**
+ * Why a proof's verification method cannot back the proof even though its
+ * DID resolved: `notFound` when the controller document or DID document has
+ * no entry with that id, `notAuthorized` when the controller document does
+ * not list it under the proof purpose's verification relationship, and
+ * `invalidId` when the resolved method has no string `id`.
+ */
+export type IVerificationMethodErrorCode =
+  | 'notFound'
+  | 'notAuthorized'
+  | 'invalidId'
+
+/**
+ * A verification method fault, thrown by proof libraries and DID drivers
+ * so that a verifier can tell an issuer's key-setup problem apart from a
+ * signature that does not verify. Match on `name` and `code` rather than
+ * `instanceof`, since a duplicated package copy would defeat the latter.
+ */
+export class VerificationMethodError extends Error {
+  code: IVerificationMethodErrorCode
+  verificationMethod?: string
+
+  constructor(
+    message: string,
+    {
+      code,
+      verificationMethod,
+      cause
+    }: {
+      code: IVerificationMethodErrorCode
+      verificationMethod?: string
+      cause?: unknown
+    }
+  ) {
+    super(message, cause === undefined ? undefined : { cause })
+    this.name = 'VerificationMethodError'
+    this.code = code
+    this.verificationMethod = verificationMethod
   }
 }
 

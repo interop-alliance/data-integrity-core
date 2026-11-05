@@ -3,7 +3,8 @@ import {
   DIDResolutionError,
   VerificationMethodError,
   isDIDResolutionError,
-  isVerificationMethodError
+  isVerificationMethodError,
+  toDIDResolutionResult
 } from '../../src/index.js'
 
 describe('VerificationMethodError', () => {
@@ -68,6 +69,35 @@ describe('isDIDResolutionError()', () => {
     ).toBe(false)
     expect(isDIDResolutionError(null)).toBe(false)
     expect(isDIDResolutionError('DIDResolutionError')).toBe(false)
+  })
+})
+
+describe('toDIDResolutionResult()', () => {
+  it('renders code and problemDetails as a failure envelope', () => {
+    const problemDetails = {
+      type: 'https://www.w3.org/ns/did#NOT_FOUND',
+      title: 'The DID was not found.'
+    }
+    expect(toDIDResolutionResult({ code: 'notFound', problemDetails })).toEqual(
+      {
+        didResolutionMetadata: { error: 'notFound', problemDetails },
+        didDocument: null,
+        didDocumentMetadata: {}
+      }
+    )
+  })
+
+  it('omits problemDetails when absent', () => {
+    expect(toDIDResolutionResult({ code: 'notFound' })).toEqual({
+      didResolutionMetadata: { error: 'notFound' },
+      didDocument: null,
+      didDocumentMetadata: {}
+    })
+  })
+
+  it('matches DIDResolutionError.toResolutionResult()', () => {
+    const error = new DIDResolutionError('x', { code: 'invalidDid' })
+    expect(toDIDResolutionResult(error)).toEqual(error.toResolutionResult())
   })
 })
 

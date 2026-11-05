@@ -221,7 +221,8 @@ export interface IDIDResolutionResult {
  * the same failure as a spec resolution-result envelope
  * (`didResolutionMetadata.error` + `problemDetails`). Recognize one with
  * `isDIDResolutionError()` rather than `instanceof`, since a duplicated
- * package copy would defeat the latter.
+ * package copy would defeat the latter, and render such an instance with
+ * `toDIDResolutionResult()`.
  */
 export class DIDResolutionError extends Error {
   code: IDIDResolutionErrorCode
@@ -246,15 +247,33 @@ export class DIDResolutionError extends Error {
   }
 
   toResolutionResult(): IDIDResolutionResult {
-    const didResolutionMetadata: IDIDResolutionMetadata = { error: this.code }
-    if (this.problemDetails !== undefined) {
-      didResolutionMetadata.problemDetails = this.problemDetails
-    }
-    return {
-      didResolutionMetadata,
-      didDocument: null,
-      didDocumentMetadata: {}
-    }
+    return toDIDResolutionResult(this)
+  }
+}
+
+/**
+ * Renders a resolution failure as a spec resolution-result envelope
+ * (`didResolutionMetadata.error` + `problemDetails`, `didDocument: null`).
+ * Takes the `code` and `problemDetails` fields rather than a
+ * `DIDResolutionError` instance, so it also serves an error accepted by
+ * `isDIDResolutionError()` from a duplicated package copy or another realm,
+ * which may lack the `toResolutionResult()` method.
+ */
+export function toDIDResolutionResult({
+  code,
+  problemDetails
+}: {
+  code: IDIDResolutionErrorCode
+  problemDetails?: IProblemDetails
+}): IDIDResolutionResult {
+  const didResolutionMetadata: IDIDResolutionMetadata = { error: code }
+  if (problemDetails !== undefined) {
+    didResolutionMetadata.problemDetails = problemDetails
+  }
+  return {
+    didResolutionMetadata,
+    didDocument: null,
+    didDocumentMetadata: {}
   }
 }
 

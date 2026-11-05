@@ -1,5 +1,14 @@
 # @interop/data-integrity-core Changelog
 
+## 8.11.0 - TBD
+
+### Added
+
+- `toDIDResolutionResult()`: renders `{ code, problemDetails }` as a
+  resolution-result failure envelope. Serves an error accepted by
+  `isDIDResolutionError()` from a duplicated package copy, which may lack
+  `toResolutionResult()`. The instance method now delegates to it.
+
 ## 8.10.0 - 2026-11-05
 
 ### Added

@@ -219,7 +219,9 @@ export interface IDIDResolutionResult {
  * either error channel: throw it from APIs with exception-based contracts
  * (e.g. a did-io driver's `get()`), or call `toResolutionResult()` to render
  * the same failure as a spec resolution-result envelope
- * (`didResolutionMetadata.error` + `problemDetails`).
+ * (`didResolutionMetadata.error` + `problemDetails`). Recognize one with
+ * `isDIDResolutionError()` rather than `instanceof`, since a duplicated
+ * package copy would defeat the latter.
  */
 export class DIDResolutionError extends Error {
   code: IDIDResolutionErrorCode
@@ -257,6 +259,20 @@ export class DIDResolutionError extends Error {
 }
 
 /**
+ * Whether `value` is a `DIDResolutionError`. Also accepts an instance from a
+ * duplicated copy of this package or from another realm, where `instanceof`
+ * fails, by matching on `name` and a string `code`.
+ */
+export function isDIDResolutionError(
+  value: unknown
+): value is DIDResolutionError {
+  return (
+    value instanceof DIDResolutionError ||
+    hasErrorNameAndCode(value, 'DIDResolutionError')
+  )
+}
+
+/**
  * Why a proof's verification method cannot back the proof even though its
  * DID resolved: `notFound` when the controller document or DID document has
  * no entry with that id, `notAuthorized` when the controller document does
@@ -271,8 +287,9 @@ export type IVerificationMethodErrorCode =
 /**
  * A verification method fault, thrown by proof libraries and DID drivers
  * so that a verifier can tell an issuer's key-setup problem apart from a
- * signature that does not verify. Match on `name` and `code` rather than
- * `instanceof`, since a duplicated package copy would defeat the latter.
+ * signature that does not verify. Recognize one with
+ * `isVerificationMethodError()` rather than `instanceof`, since a duplicated
+ * package copy would defeat the latter.
  */
 export class VerificationMethodError extends Error {
   code: IVerificationMethodErrorCode
@@ -295,6 +312,28 @@ export class VerificationMethodError extends Error {
     this.code = code
     this.verificationMethod = verificationMethod
   }
+}
+
+/**
+ * Whether `value` is a `VerificationMethodError`. Also accepts an instance
+ * from a duplicated copy of this package or from another realm, where
+ * `instanceof` fails, by matching on `name` and a string `code`.
+ */
+export function isVerificationMethodError(
+  value: unknown
+): value is VerificationMethodError {
+  return (
+    value instanceof VerificationMethodError ||
+    hasErrorNameAndCode(value, 'VerificationMethodError')
+  )
+}
+
+function hasErrorNameAndCode(value: unknown, name: string): boolean {
+  if (typeof value !== 'object' || value === null) {
+    return false
+  }
+  const candidate = value as { name?: unknown; code?: unknown }
+  return candidate.name === name && typeof candidate.code === 'string'
 }
 
 /**

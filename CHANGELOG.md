@@ -1,5 +1,14 @@
 # @interop/data-integrity-core Changelog
 
+## 8.10.0 - TBD
+
+### Added
+
+- `isDIDResolutionError()` and `isVerificationMethodError()` type guards.
+  Each accepts a local instance, an instance from a duplicated package copy,
+  or one from another realm, matching on `name` and `code` where `instanceof`
+  fails. Consumers use these in place of their own `name` checks.
+
 ## 8.9.0 - 2026-10-12
 
 ### Added

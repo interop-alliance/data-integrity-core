@@ -31,6 +31,15 @@ export interface ICapabilityDelegationProof {
 }
 
 /**
+ * A caveat carried by a zCap in its `caveat` property. The `type` names the
+ * caveat. Any other properties are specific to that type.
+ */
+export interface ICaveat {
+  type: string
+  [key: string]: unknown
+}
+
+/**
  * A root authorization capability (zCap). Root zCaps are unsigned, have no
  * `expires` field and no delegation proof. Their `id` follows the convention
  * `urn:zcap:root:${encodeURIComponent(invocationTarget)}`.
@@ -50,6 +59,11 @@ export interface IRootZcap {
    * its own `allowedAction` to a subset of it.
    */
   allowedAction?: string | string[]
+  /**
+   * Caveat(s) restricting this capability. A verifier must refuse a
+   * capability carrying a caveat type it does not support.
+   */
+  caveat?: ICaveat | ICaveat[]
 }
 
 /**
@@ -75,6 +89,11 @@ export interface IDelegatedZcap {
   allowedAction?: string | string[]
   /** ISO 8601 date-time when this capability expires. */
   expires: string
+  /**
+   * Caveat(s) restricting this capability. A verifier must refuse a
+   * capability carrying a caveat type it does not support.
+   */
+  caveat?: ICaveat | ICaveat[]
   /** The capability delegation proof(s). */
   proof: ICapabilityDelegationProof | ICapabilityDelegationProof[]
   /**

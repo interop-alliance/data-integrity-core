@@ -1,5 +1,12 @@
 # @interop/data-integrity-core Changelog
 
+## 8.12.0 - TBD
+
+### Added
+
+- `ICaveat` interface, and an optional `caveat` property on `IRootZcap` and
+  `IDelegatedZcap`. Its value is one caveat object or an array of them.
+
 ## 8.11.0 - 2026-11-05
 
 ### Added
